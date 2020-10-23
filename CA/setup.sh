@@ -12,3 +12,4 @@ cp /media/asl/CA/openssl.cnf /etc/ssl/
 cp /media/asl/CA/cakey.pem /etc/ssl/CA/private
 cp /media/asl/CA/cacert.pem /etc/ssl/CA
 cp /media/asl/CA/.rnd /home/ubuntu
+ip route add 192.168.1.0/24 via 10.0.20.40
