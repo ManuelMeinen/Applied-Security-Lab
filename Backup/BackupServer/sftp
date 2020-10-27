@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+import pysftp
+import datetime
+
+class SFTP:
+    def __init__(self, host_ip, username, key_file):
+        self.host_ip = host_ip
+        self.username = username
+        self.key_file = key_file
+
+    def getFile(self, file_name, remote_dir, local_dir):
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            # Assemble the path where the file should be stored
+            timestamp = str(datetime.datetime.now().timestamp())
+            localFilePath = local_dir+file_name+"_"+timestamp
+            # Assemble the path from where we get the file on the remote host
+            remoteFilePath = remote_dir+file_name
+            sftp.get(remotepath=remoteFilePath, localpath=localFilePath)
+
+    def putFile(self, file_name, remote_dir, local_dir):
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            # Assemble the path from where we get the file that we want to send to the remote host
+            localFilePath = local_dir+file_name
+            # Assemble the path to where we want to send the file on the remote host
+            remoteFilePath = remote_dir+file_name
+            sftp.put(remotepath=remoteFilePath, localpath=localFilePath)
