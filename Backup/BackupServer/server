@@ -1,4 +1,60 @@
 #!/usr/bin/python3
+from sftp import SFTP
+import constants
+import file_system_handler
+
+def runBackup():
+    for name in constants.NAMES:
+        print("Start backup for "+name+"...")
+        # Make a tmp directory
+        #print("#")
+        file_system_handler.make_tmp_dir()
+        #print("#")
+        tmp_path = constants.TMP_DIR_PATH
+        try:
+            sftp = SFTP(host_ip=constants.IP_ADDRESSES[name], username=constants.USER_BACKUP, key_file=constants.KEY_PATH)
+            if not sftp.is_online():
+                print("Host "+name+" is offline!")
+                print("Host "+name+" was not backed up!")
+                continue
+            #print("#")
+            with open(constants.BACKUP_FILE_LIST[name], "r") as f:
+                #print("#")
+                for line in f.readlines():
+                    # Backup a file or directory
+                    #print("#")
+                    sftp.get(path=line, local_dir=tmp_path)
+                    print("#")
+                if constants.BACKUP_LETTERBOX[name]:
+                    # Empty the letterbox
+                    sftp.empty_letterbox(tmp_path)
+                    print("#")
+                
+                arch_name = file_system_handler.zip_dir(dir_path=tmp_path, machine_name=name)
+                print("#")
+                file_system_handler.move_archive(archive_name=arch_name, machine_name=name)
+                print("#")
+                file_system_handler.cleanup_backup_folder(machine_name=name) #TODO: that doesn't seem to work
+                print("#")
+        #except Exception:
+         #   print("Connection failed...")
+          #  print("Host "+name+" was not backed up!")
+           # continue
+        finally:
+            # Delete the tmp directory
+            file_system_handler.del_tmp_dir()
+            
+        
 
 if __name__ == "__main__":
-    pass
+    #Test with MySQL Server
+    #import pysftp
+    #with pysftp.Connection(host="10.0.20.30", username="backup_user", private_key="/home/ubuntu/.ssh/backup_sftp_key") as sftp:
+    #    print("ok")
+
+    #sftp = SFTP(host_ip=constants.IP_ADDRESSES[constants.NAME_MYSQL_DATABASE], username=constants.NAME_MYSQL_DATABASE, key_file=constants.KEY_PATH)
+    #sftp.getDir(folder_name="backup_dir", remote_dir="/", local_dir="/home/")
+    
+    runBackup()
+    #sftp = SFTP(host_ip="10.0.20.30", username="backup_user", key_file="/home/ubuntu/.ssh/backup_sftp_key")
+    #sftp.getDir(folder_name="test", remote_dir="/home/ubuntu", local_dir="/home/ubuntu")
