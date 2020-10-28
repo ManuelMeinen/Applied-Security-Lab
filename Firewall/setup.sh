@@ -17,9 +17,12 @@ iptables -A OUTPUT -d 10.0.20.50 -s 10.0.20.40 -p tcp --sport 22 -j ACCEPT
 # Allow traffic between Web Server and Core Server
 iptables -A FORWARD -i enp0s9 -s 192.168.1.20 -o enp0s8 -d 10.0.10.10 -j ACCEPT
 iptables -A FORWARD -i enp0s8 -s 10.0.10.10 -o enp0s9 -d 192.168.1.20 -j ACCEPT
-# Allow ssh traffic between VPN Server and any other Server
+# Allow ssh traffic from VPN Server to any other Server
 iptables -A FORWARD -i enp0s9 -s 192.168.1.30 -o enp0s3 -p tcp --dport 22 -j ACCEPT
 iptables -A FORWARD -i enp0s3 -p tcp --sport 22 -o enp0s9  -d 192.168.1.30 -j ACCEPT
+# Allow sftp traffic between Backup Server and VPN Server
+iptables -A FORWARD -i enp0s3 -s 10.0.20.50 -o enp0s9 -d 192.168.1.30 -p tcp --dport 22 -j ACCEPT
+iptables -A FORWARD -i enp0s9 -d 10.0.20.50 -o enp0s3 -s 192.168.1.30 -p tcp --sport 22 -j ACCEPT
 
 # Adding a backup_user
 username="backup_user"
