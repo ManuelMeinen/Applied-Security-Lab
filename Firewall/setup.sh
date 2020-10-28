@@ -23,6 +23,9 @@ iptables -A FORWARD -i enp0s3 -p tcp --sport 22 -o enp0s9  -d 192.168.1.30 -j AC
 # Allow sftp traffic between Backup Server and VPN Server
 iptables -A FORWARD -i enp0s3 -s 10.0.20.50 -o enp0s9 -d 192.168.1.30 -p tcp --dport 22 -j ACCEPT
 iptables -A FORWARD -i enp0s9 -d 10.0.20.50 -o enp0s3 -s 192.168.1.30 -p tcp --sport 22 -j ACCEPT
+# Allow sftp traffic between Backup Server and Web Server
+iptables -A FORWARD -i enp0s3 -s 10.0.20.50 -o enp0s9 -d 192.168.1.20 -p tcp --dport 22 -j ACCEPT
+iptables -A FORWARD -i enp0s9 -d 10.0.20.50 -o enp0s3 -s 192.168.1.20 -p tcp --sport 22 -j ACCEPT
 
 # Adding a backup_user
 username="backup_user"
