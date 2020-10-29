@@ -37,7 +37,7 @@ BACKUP_FOLDER = {
 BACKUP_LETTERBOX = {
     NAME_CORE:False,
     NAME_CA:False,
-    NAME_MYSQL_DATABASE:False,
+    NAME_MYSQL_DATABASE:True,
     NAME_FIREWALL:False,
     NAME_WEB_SERVER:False,
     NAME_VPN:False
@@ -53,4 +53,4 @@ BACKUP_DIR_MODE = 703
 HOME_PATH = "/home/ubuntu/"
 TMP_DIR_PATH = "/home/ubuntu/tmp"
 
-NO_OF_BACKUP_VERSIONS = 5
+NO_OF_BACKUP_VERSIONS = 3 #TODO: find a suitable number

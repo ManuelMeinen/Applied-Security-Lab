@@ -27,16 +27,32 @@ class SFTP:
         path: line from the backup file list
         local_dir: directory to where the file or folder should be backed up
         '''
+        # Remove line breaks from the path
+        path = path.replace('\r', '').replace('\n', '')
         if path.split("/")[-1]=="*":
             # Path points to a directory
             folder_name = path.split("/")[-2]
             remote_dir = path[0:-(len(folder_name)+2)]
-            self.getDir(folder_name=folder_name, remote_dir=remote_dir, local_dir=local_dir)
+            try:
+                if remote_dir=="/":
+                    remote_dir=2*"../" #TODO: this is a bit a hacky solution... but "/" doesn't work for some reason...
+                self.getDir(folder_name=folder_name, remote_dir=remote_dir, local_dir=local_dir)
+            except Exception:
+                print("ERROR: getDir("+folder_name+", "+remote_dir+", "+local_dir+") failed!")
+            finally:
+                pass
+            
         else:
             # Path points to a single file
             file_name = path.split("/")[-1]
             remote_dir = path[0:-(len(file_name))]
-            self.getFile(file_name=file_name, remote_dir=remote_dir, local_dir=local_dir)
+            try:
+                self.getFile(file_name=file_name, remote_dir=remote_dir, local_dir=local_dir)
+            except Exception:
+                print("ERROR: getFile("+file_name+", "+remote_dir+", "+local_dir+") failed!")
+            finally:
+                pass
+            
 
 
     def getDir(self, folder_name, remote_dir, local_dir):
@@ -49,10 +65,6 @@ class SFTP:
         with pysftp.Connection(host=self.host_ip, username=self.username, private_key =self.key_file) as sftp:
             # Copy full folder hirarchy at remote_dir to local_dir
             with sftp.cd(remote_dir[0:-1]) as cd:
-                print("getDir")
-                print(folder_name)
-                print(local_dir)
-                print(remote_dir[0:-1])
                 sftp.get_r(remotedir=folder_name, localdir=local_dir)
 
     def getFile(self, file_name, remote_dir, local_dir):
@@ -64,7 +76,7 @@ class SFTP:
         '''
         with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
             # Assemble the path where the file should be stored
-            localFilePath = local_dir+file_name
+            localFilePath = local_dir+"/"+file_name
             # Assemble the path from where we get the file on the remote host
             remoteFilePath = remote_dir+file_name
             sftp.get(remotepath=remoteFilePath, localpath=localFilePath)
@@ -91,7 +103,6 @@ class SFTP:
         # Back up the content of the letterbox
         self.get(path=constants.BACKUP_DIR+"*", local_dir=local_dir)
         #self.getDir(constants.BACKUP_DIR[1:], "/", local_dir)
-        print("letterbox backed up")
         # remove the letterbox
         self.reset_letterbox()
         

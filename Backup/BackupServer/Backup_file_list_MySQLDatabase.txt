@@ -1,1 +1,2 @@
 /home/ubuntu/test/*
+/home/ubuntu/coucou

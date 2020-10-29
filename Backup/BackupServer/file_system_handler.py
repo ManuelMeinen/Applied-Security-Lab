@@ -24,7 +24,7 @@ def zip_dir(dir_path, machine_name):
     timestamp = str(int(datetime.datetime.now().timestamp()))
     arch_name = machine_name+"_"+timestamp+".zip"
     target_dir = dir_path[0:-(len(dir_path.split("/")[-1]))]
-    subprocess.run("zip "+target_dir + arch_name+" "+dir_path, shell=True)
+    subprocess.run("zip -r -qq "+target_dir + arch_name+" "+dir_path+"/*", shell=True)
     return target_dir + arch_name
 
 def move_archive(archive_name, machine_name):
@@ -41,22 +41,23 @@ def del_file(file_name, dir_name):
     file_name: the file to be deleted
     dir_name: directory of the file
     '''
-    print("rm -r "+dir_name+"/"+file_name)
     subprocess.run("rm -r "+dir_name+"/"+file_name, shell=True)
 
 def cleanup_backup_folder(machine_name):
+    '''
+    if too many backups are stored remove the oldest one 
+    (constants.NO_OF_BACKUP_VERSIONS is the number of backups that are kept)
+    machine_name: the name of the machine that is being backed up
+    '''
     backup_dir = constants.BACKUP_FOLDER[machine_name]
-    print(backup_dir)
-    print(len([name for name in os.listdir(backup_dir)]))
     while len([name for name in os.listdir(backup_dir)])>constants.NO_OF_BACKUP_VERSIONS:
-        print(len([name for name in os.listdir(backup_dir)]))
         #remove oldest backup
         oldest_backup = ""
         oldest_timestamp = 0
         names = [name for name in os.listdir(backup_dir)]
         for name in names:
             timestamp = int(name.split("_")[-1].split(".")[0])
-            if timestamp<oldest_timestamp or timestamp==0:
+            if timestamp<oldest_timestamp or oldest_timestamp==0:
                 # make current backup the oldest one
                 oldest_backup = name
                 oldest_timestamp = timestamp
