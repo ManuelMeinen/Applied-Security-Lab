@@ -15,3 +15,19 @@ sysctl -w net.ipv4.ip_forward=1
 iptables -A FORWARD -i wg0 -j ACCEPT
 iptables -A FORWARD -o wg0 -j ACCEPT
 iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+
+# Adding a backup_user
+username="backup_user"
+password="ubuntu" #TODO: change the password
+pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
+useradd -m -p "$pass" "$username"
+adduser "$username" sudo
+# Create Backup Directory
+mkdir "backup_dir"
+chown "backup_user" "backup_dir"
+chmod 0703 "backup_dir"
+#SFTP keys for login without password
+mkdir /home/backup_user/.ssh
+chmod 755 /home/backup_user/.ssh
+cp /media/asl/VPN/authorized_keys /home/backup_user/.ssh
+chmod 755 /home/backup_user/.ssh/authorized_keys
