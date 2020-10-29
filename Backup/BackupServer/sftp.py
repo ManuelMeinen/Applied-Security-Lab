@@ -71,8 +71,6 @@ class SFTP:
             folder_name = path.split("/")[-2]
             remote_dir = path[0:-(len(folder_name)+2)]
             try:
-                if remote_dir=="/":
-                    remote_dir=2*"../" #TODO: this is a bit a hacky solution... but "/" doesn't work for some reason...
                 self.getDir(folder_name=folder_name, remote_dir=remote_dir, local_dir=local_dir)
             except Exception:
                 print("ERROR: getDir("+folder_name+", "+remote_dir+", "+local_dir+") failed!")
@@ -99,7 +97,7 @@ class SFTP:
         '''
         with pysftp.Connection(host=self.host_ip, username=self.username, private_key =self.key_file) as sftp:
             # Copy full folder hirarchy at remote_dir to local_dir
-            with sftp.cd(remote_dir[0:-1]) as cd:
+            with sftp.cd("/"+remote_dir[0:-1]) as cd:
                 sftp.get_r(remotedir=folder_name, localdir=local_dir)
 
 
