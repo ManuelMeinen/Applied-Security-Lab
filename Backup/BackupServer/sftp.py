@@ -4,6 +4,13 @@ import constants
 import os
 from stat import S_ISDIR
 
+'''
+Useful links:
+https://ourcodeworld.com/articles/read/813/how-to-access-a-sftp-server-using-pysftp-in-python
+https://pysftp.readthedocs.io/en/latest/pysftp.html
+https://pypi.org/project/pysftp/
+'''
+
 class SFTP:
     def __init__(self, host_ip, username, key_file):
         self.host_ip = host_ip
@@ -102,8 +109,7 @@ class SFTP:
         '''
         # Back up the content of the letterbox
         self.get(path=constants.BACKUP_DIR+"*", local_dir=local_dir)
-        #self.getDir(constants.BACKUP_DIR[1:], "/", local_dir)
-        # remove the letterbox
+        # reset the letterbox
         self.reset_letterbox()
         
     def reset_letterbox(self):

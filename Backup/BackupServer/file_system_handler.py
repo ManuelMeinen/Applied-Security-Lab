@@ -1,6 +1,5 @@
 import constants
 import subprocess
-import datetime
 import os
 
 def make_tmp_dir():
@@ -15,16 +14,20 @@ def del_tmp_dir():
     '''
     subprocess.run("rm -r "+constants.TMP_DIR_PATH, shell=True)
 
-def zip_dir(dir_path, machine_name):
+def zip_dir(dir_path, machine_name, timestamp):
     '''
     Create a zip archive of a directory
     dir_path: path to the directory to compress
     machine_name: used to create the archive's name
+    timestamp: unique timestamp that is used to keep track of the backup versions
     '''
-    timestamp = str(int(datetime.datetime.now().timestamp()))
     arch_name = machine_name+"_"+timestamp+".zip"
     target_dir = dir_path[0:-(len(dir_path.split("/")[-1]))]
-    subprocess.run("zip -r -qq "+target_dir + arch_name+" "+dir_path+"/*", shell=True)
+    if len(os.listdir(dir_path) ) == 0:
+        print("Warning: No files were backed up therefore no backup archive will be created!")
+        return None
+    else:    
+        subprocess.run("zip -r -qq "+target_dir + arch_name+" "+dir_path+"/*", shell=True)
     return target_dir + arch_name
 
 def move_archive(archive_name, machine_name):
