@@ -1,67 +1,147 @@
-import constants
-import subprocess
+import pysftp
 import datetime
+import constants
 import os
+from stat import S_ISDIR
 
-def make_tmp_dir():
-    '''
-    create a tmp directory
-    '''
-    subprocess.run("mkdir "+constants.TMP_DIR_PATH, shell=True)
+class SFTP:
+    def __init__(self, host_ip, username, key_file):
+        self.host_ip = host_ip
+        self.username = username
+        self.key_file = key_file
+    
+    def is_online(self):
+        '''
+        Is the sftp host reachable?
+        '''
+        try:
+            with pysftp.Connection(host=self.host_ip, username=self.username, private_key =self.key_file) as sftp:
+                return True
+        except Exception:
+            return False
+    
+    def get(self, path, local_dir):
+        '''
+        Parse a path and depending on if we back up a folder or a single file 
+        perform the backup accordingly.
+        path: line from the backup file list
+        local_dir: directory to where the file or folder should be backed up
+        '''
+        # Remove line breaks from the path
+        path = path.replace('\r', '').replace('\n', '')
+        if path.split("/")[-1]=="*":
+            # Path points to a directory
+            folder_name = path.split("/")[-2]
+            remote_dir = path[0:-(len(folder_name)+2)]
+            try:
+                if remote_dir=="/":
+                    remote_dir=2*"../" #TODO: this is a bit a hacky solution... but "/" doesn't work for some reason...
+                self.getDir(folder_name=folder_name, remote_dir=remote_dir, local_dir=local_dir)
+            except Exception:
+                print("ERROR: getDir("+folder_name+", "+remote_dir+", "+local_dir+") failed!")
+            finally:
+                pass
+            
+        else:
+            # Path points to a single file
+            file_name = path.split("/")[-1]
+            remote_dir = path[0:-(len(file_name))]
+            try:
+                self.getFile(file_name=file_name, remote_dir=remote_dir, local_dir=local_dir)
+            except Exception:
+                print("ERROR: getFile("+file_name+", "+remote_dir+", "+local_dir+") failed!")
+            finally:
+                pass
+            
 
-def del_tmp_dir():
-    '''
-    delete the tmp directory
-    '''
-    subprocess.run("rm -r "+constants.TMP_DIR_PATH, shell=True)
 
-def zip_dir(dir_path, machine_name):
-    '''
-    Create a zip archive of a directory
-    dir_path: path to the directory to compress
-    machine_name: used to create the archive's name
-    '''
-    timestamp = str(int(datetime.datetime.now().timestamp()))
-    arch_name = machine_name+"_"+timestamp+".zip"
-    target_dir = dir_path[0:-(len(dir_path.split("/")[-1]))]
-    subprocess.run("zip -r -qq "+target_dir + arch_name+" "+dir_path+"/*", shell=True)
-    return target_dir + arch_name
+    def getDir(self, folder_name, remote_dir, local_dir):
+        '''
+        Backup an entire directory recursively (with all subdirectories)
+        folder_name: Name of the folder on the remote
+        remote_dir: Path to where "folder_name" is located
+        local_dir: Path to the directory where "folder_name" should be backed up
+        '''
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key =self.key_file) as sftp:
+            # Copy full folder hirarchy at remote_dir to local_dir
+            with sftp.cd(remote_dir[0:-1]) as cd:
+                sftp.get_r(remotedir=folder_name, localdir=local_dir)
 
-def move_archive(archive_name, machine_name):
-    '''
-    Move the zip archive into the backup folder
-    archive_name: the name of the zip archive
-    machine_name: the name of the machine for which we run a backup
-    '''
-    subprocess.run("mv "+archive_name+" "+constants.BACKUP_FOLDER[machine_name], shell=True)
+    def getFile(self, file_name, remote_dir, local_dir):
+        '''
+        Back up a single file.
+        file_name: Name of the file on the remote
+        remote_dir: Path to where "file_name" is located
+        local_dir: Path to the directory where "file_name" should be backed up
+        '''
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            # Assemble the path where the file should be stored
+            localFilePath = local_dir+"/"+file_name
+            # Assemble the path from where we get the file on the remote host
+            remoteFilePath = remote_dir+file_name
+            sftp.get(remotepath=remoteFilePath, localpath=localFilePath)
 
-def del_file(file_name, dir_name):
-    '''
-    Delete a file in a directory
-    file_name: the file to be deleted
-    dir_name: directory of the file
-    '''
-    subprocess.run("rm -r "+dir_name+"/"+file_name, shell=True)
-
-def cleanup_backup_folder(machine_name):
-    '''
-    if too many backups are stored remove the oldest one 
-    (constants.NO_OF_BACKUP_VERSIONS is the number of backups that are kept)
-    machine_name: the name of the machine that is being backed up
-    '''
-    backup_dir = constants.BACKUP_FOLDER[machine_name]
-    while len([name for name in os.listdir(backup_dir)])>constants.NO_OF_BACKUP_VERSIONS:
-        #remove oldest backup
-        oldest_backup = ""
-        oldest_timestamp = 0
-        names = [name for name in os.listdir(backup_dir)]
-        for name in names:
-            timestamp = int(name.split("_")[-1].split(".")[0])
-            if timestamp<oldest_timestamp or oldest_timestamp==0:
-                # make current backup the oldest one
-                oldest_backup = name
-                oldest_timestamp = timestamp
-        # Delete the oldest backup file
-        del_file(file_name=oldest_backup, dir_name=backup_dir)
+    def putFile(self, file_name, remote_dir, local_dir):
+        '''
+        Restore a single file.
+        file_name: Name of the file which is to be restored
+        remote_dir: Path to where "file_name" should be put
+        local_dir: Path to the directory where "file_name" is located
+        '''
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            # Assemble the path from where we get the file that we want to send to the remote host
+            localFilePath = local_dir+file_name
+            # Assemble the path to where we want to send the file on the remote host
+            remoteFilePath = remote_dir+file_name
+            sftp.put(remotepath=remoteFilePath, localpath=localFilePath)
+    
+    def empty_letterbox(self, local_dir):#TODO: that doesn't seem to work
+        '''
+        Empty the letterbox
+        local_dir: this is where the letter box is saved
+        '''
+        # Back up the content of the letterbox
+        self.get(path=constants.BACKUP_DIR+"*", local_dir=local_dir)
+        #self.getDir(constants.BACKUP_DIR[1:], "/", local_dir)
+        # remove the letterbox
+        self.reset_letterbox()
+        
+    def reset_letterbox(self):
+        '''
+        Delete the content of the letter box on the remote
+        '''
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            files = sftp.listdir(remotepath=constants.BACKUP_DIR)
+            for f in files:
+                filepath = os.path.join(constants.BACKUP_DIR, f)
+                if self.isdir(filepath):
+                    self.rmdir(filepath)
+                else:
+                    sftp.remove(filepath)
         
 
+    def isdir(self, path):
+        '''
+        True iff path is a directory
+        path: path to test
+        '''
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            try:
+                return S_ISDIR(sftp.stat(path).st_mode)
+            except IOError:
+                return False
+
+    def rmdir(self, path):
+        '''
+        Remove the directory with all its content
+        path: path of the directory on the remote
+        '''
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            files = sftp.listdir(remotepath=path)
+            for f in files:
+                filepath = os.path.join(path, f)
+                if isdir(filepath):
+                    self.rmdir(filepath)
+                else:
+                    sftp.remove(filepath)
+            sftp.rmdir(path)
