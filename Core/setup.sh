@@ -6,7 +6,7 @@ ip route add 192.168.1.0/24 via 10.0.10.40
 ip route add 192.168.1.30/32 via 10.0.20.40
 
 apt install -y python3-pip
-pip3 install requests
+pip3 install requests cryptography
 cp /media/asl/CA/cacert.pem /home/ubuntu/cacert.pem
 cp /media/asl/Core/flask_client.py /home/ubuntu
 
