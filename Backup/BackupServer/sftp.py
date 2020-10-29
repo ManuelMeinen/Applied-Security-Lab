@@ -2,6 +2,7 @@ import pysftp
 import datetime
 import constants
 import os
+import signal
 from stat import S_ISDIR
 
 '''
@@ -12,20 +13,49 @@ https://pypi.org/project/pysftp/
 '''
 
 class SFTP:
+
     def __init__(self, host_ip, username, key_file):
         self.host_ip = host_ip
         self.username = username
         self.key_file = key_file
-    
-    def is_online(self):
+
+
+    def handler(self, signum, frame):
         '''
-        Is the sftp host reachable?
+        Handler for timeout exception
+        '''
+        print("Timeout!")
+        self.TIMEOUT_FLAG = True
+        raise Exception("Host is unreachable!")
+    
+
+    def try_connection(self):
+        '''
+        Try to connect to the host (might block!)
         '''
         try:
             with pysftp.Connection(host=self.host_ip, username=self.username, private_key =self.key_file) as sftp:
                 return True
         except Exception:
             return False
+    
+
+    def is_online(self):
+        '''
+        Is the sftp host reachable?
+        '''
+        signal.signal(signal.SIGALRM, self.handler)
+        # Set the timer to 10 sec
+        signal.alarm(10)
+        try:
+            isOnline = self.try_connection() 
+        except Exception as exc:
+            isOnline = False
+        finally:
+            # Trun off the timer
+            signal.alarm(0)
+            return isOnline
+        
     
     def get(self, path, local_dir):
         '''
@@ -47,8 +77,7 @@ class SFTP:
             except Exception:
                 print("ERROR: getDir("+folder_name+", "+remote_dir+", "+local_dir+") failed!")
             finally:
-                pass
-            
+                pass 
         else:
             # Path points to a single file
             file_name = path.split("/")[-1]
@@ -61,7 +90,6 @@ class SFTP:
                 pass
             
 
-
     def getDir(self, folder_name, remote_dir, local_dir):
         '''
         Backup an entire directory recursively (with all subdirectories)
@@ -73,6 +101,7 @@ class SFTP:
             # Copy full folder hirarchy at remote_dir to local_dir
             with sftp.cd(remote_dir[0:-1]) as cd:
                 sftp.get_r(remotedir=folder_name, localdir=local_dir)
+
 
     def getFile(self, file_name, remote_dir, local_dir):
         '''
@@ -88,6 +117,7 @@ class SFTP:
             remoteFilePath = remote_dir+file_name
             sftp.get(remotepath=remoteFilePath, localpath=localFilePath)
 
+
     def putFile(self, file_name, remote_dir, local_dir):
         '''
         Restore a single file.
@@ -102,6 +132,7 @@ class SFTP:
             remoteFilePath = remote_dir+file_name
             sftp.put(remotepath=remoteFilePath, localpath=localFilePath)
     
+
     def empty_letterbox(self, local_dir):#TODO: that doesn't seem to work
         '''
         Empty the letterbox
@@ -112,6 +143,7 @@ class SFTP:
         # reset the letterbox
         self.reset_letterbox()
         
+
     def reset_letterbox(self):
         '''
         Delete the content of the letter box on the remote
@@ -136,6 +168,7 @@ class SFTP:
                 return S_ISDIR(sftp.stat(path).st_mode)
             except IOError:
                 return False
+
 
     def rmdir(self, path):
         '''
