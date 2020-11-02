@@ -5,8 +5,14 @@ from base64 import urlsafe_b64encode, urlsafe_b64decode
 import ssl
 ca_server = Flask(__name__)
 
-@ca_server.route("/certs", methods=['POST'])
+@ca_server.route("/certs", methods=['GET','POST'])
 def certs():
+    if request.method == "POST":
+        return do_new_cert(request)
+    elif request.method == "GET":
+        return get_serial_number()
+
+def do_new_cert(request):
     filename = "/tmp/"+str(time.time())
     f = open(filename, "w")
     csr = urlsafe_b64decode(request.form['csr']).decode()
@@ -19,6 +25,13 @@ def certs():
     os.system("rm " + filename)
     os.system("rm " + filename + ".pem")
     return crt
+
+def get_serial_number():
+    filename = "/etc/ssl/CA/serial"
+    f = open(filename, "r")
+    serial = f.read()
+    f.close()
+    return serial
 
 if __name__ == "__main__":
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)

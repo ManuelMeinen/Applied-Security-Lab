@@ -1,10 +1,12 @@
 import requests
+import sys
 
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization.pkcs12 import serialize_key_and_certificates, load_key_and_certificates
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
@@ -14,9 +16,16 @@ session = requests.Session()
 session.verify = cafile
 
 def main():
-    username = 'alex'
+    username = sys.argv[1]
     [private_key, csr] = create_CSR(username)
     res = session.post("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'csr': csr})
+    if res.status_code != 200:
+        print("error")
+    else:
+        cert = x509.load_pem_x509_certificate(res.text.encode('utf-8'))
+        pem_pkcs12 = urlsafe_b64encode(serialize_key_and_certificates(name=username.encode('utf-8'), key=private_key, cert=cert, cas=None, encryption_algorithm=serialization.NoEncryption())).decode('utf-8')
+        print(pem_pkcs12)
+    res = session.get("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     print(res.text)
 
 def create_CSR(username):

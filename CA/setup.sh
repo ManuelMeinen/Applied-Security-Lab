@@ -15,6 +15,7 @@ cp /media/asl/CA/.rnd /home/ubuntu
 ip route add 192.168.1.0/24 via 10.0.20.40
 
 echo "10.0.20.10    core" >> /etc/hosts
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 
 apt-get update
