@@ -45,6 +45,7 @@ def revoke_certificate(request):
     resultRevoke = subprocess.check_output("sudo openssl ca -revoke " + filename + " -config /etc/ssl/openssl.cnf -passin pass:ubuntu", stderr=subprocess.STDOUT, shell=True)
     resultGencrl = subprocess.check_output("sudo openssl ca -gencrl -out /etc/ssl/CA/crl/crl.pem -passin pass:ubuntu", stderr=subprocess.STDOUT, shell=True)
     os.remove('/home/ubuntu/revoked.pem')
+    os.remove(filename)
     resultCreate = subprocess.check_output("cat /etc/ssl/CA/cacert.pem /etc/ssl/CA/crl/crl.pem > /home/ubuntu/revoked.pem", stderr=subprocess.STDOUT, shell=True)
     return "Revocation done"
     
