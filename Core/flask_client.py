@@ -22,9 +22,18 @@ def main():
     if res.status_code != 200:
         print("error")
     else:
-        cert = x509.load_pem_x509_certificate(res.text.encode('utf-8'))
+        raw_cert = urlsafe_b64decode(res.text.encode('utf-8'))
+        cert = x509.load_pem_x509_certificate(raw_cert)
         pem_pkcs12 = urlsafe_b64encode(serialize_key_and_certificates(name=username.encode('utf-8'), key=private_key, cert=cert, cas=None, encryption_algorithm=serialization.NoEncryption())).decode('utf-8')
         print(pem_pkcs12)
+        raw_cert = urlsafe_b64encode(raw_cert).decode()
+        res = session.post("https://ca_server/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        print(res.text)
+        res = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        print(res.text)
+        res = session.post("https://ca_server/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        print(res.text)
+
     res = session.get("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     print(res.text)
 
@@ -40,6 +49,7 @@ def create_CSR(username):
         x509.NameAttribute(NameOID.COMMON_NAME, username),
     ])).sign(key, hashes.SHA256(),backend=default_backend())
     return [key, urlsafe_b64encode(csr.public_bytes(serialization.Encoding.PEM)).decode('utf-8')]
+
 
 if __name__== "__main__":
     main()

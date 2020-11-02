@@ -1,28 +1,35 @@
 #!/bin/bash
 echo "Nothing to be set up..."
-ifconfig enp0s3 10.0.20.20 netmask 255.255.255.0 up
+# Install dependencies
+apt-get update
+apt-get install python3-pip -y 
+# apt-get install nginx uwsgi uwsgi-plugin-python -y
+pip3 install Flask
+# pip3 install virtualenv
+
+# Setup CA
 apt-get install -y openssl
 mkdir /etc/ssl/CA
 mkdir /etc/ssl/CA/certs
 mkdir /etc/ssl/CA/newcerts
 mkdir /etc/ssl/CA/private
-bash -c "echo '01' > /etc/ssl/CA/serial"
+mkdir /etc/ssl/CA/crl
 touch /etc/ssl/CA/index.txt
+touch /etc/ssl/CA/index.txt.attr
 cp /media/asl/CA/openssl.cnf /etc/ssl/
 cp /media/asl/CA/cakey.pem /etc/ssl/CA/private
 cp /media/asl/CA/cacert.pem /etc/ssl/CA
 cp /media/asl/CA/.rnd /home/ubuntu
-ip route add 192.168.1.0/24 via 10.0.20.40
+echo "01" > /etc/ssl/CA/serial
+echo "01" > /etc/ssl/CA/crlnumber
+openssl ca -gencrl -out /etc/ssl/CA/crl/crl.pem -passin pass:ubuntu
+cat /etc/ssl/CA/cacert.pem  /etc/ssl/CA/crl/crl.pem > /home/ubuntu/revoked.pem
 
+# Networking
+ifconfig enp0s3 10.0.20.20 netmask 255.255.255.0 up
+ip route add 192.168.1.0/24 via 10.0.20.40
 echo "10.0.20.10    core" >> /etc/hosts
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
-
-
-apt-get update
-apt-get install python3-pip -y 
-apt-get install nginx uwsgi uwsgi-plugin-python -y
-pip3 install Flask
-pip3 install virtualenv
 
 # Internal Firewall
 iptables -F
