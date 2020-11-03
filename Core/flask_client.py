@@ -10,7 +10,10 @@ from cryptography.hazmat.primitives.serialization.pkcs12 import serialize_key_an
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.primitives import hashes
-
+######## Authentication cookie ########
+# Make a cookie by appending hash256(username+timestamp+randomnumber)
+# Save this cookie with filename the cookie and inside put the username
+# Put a crontab ereasing cookie if not touch during 10 min
 cafile = "/home/ubuntu/cacert.pem"
 session = requests.Session()
 session.verify = cafile
@@ -27,14 +30,14 @@ def main():
         pem_pkcs12 = urlsafe_b64encode(serialize_key_and_certificates(name=username.encode('utf-8'), key=private_key, cert=cert, cas=None, encryption_algorithm=serialization.NoEncryption())).decode('utf-8')
         print(pem_pkcs12)
         raw_cert = urlsafe_b64encode(raw_cert).decode()
-        res = session.post("https://ca_server/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        res = session.post("https://ca_server/certs/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
         print(res.text)
         res = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
         print(res.text)
-        res = session.post("https://ca_server/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        res = session.post("https://ca_server/certs/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
         print(res.text)
 
-    res = session.get("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = session.get("https://ca_server/certs/serial", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     print(res.text)
 
 def create_CSR(username):

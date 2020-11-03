@@ -6,12 +6,21 @@ from base64 import urlsafe_b64encode, urlsafe_b64decode
 import ssl
 ca_server = Flask(__name__)
 
-@ca_server.route("/certs", methods=['GET','POST', 'DELETE'])
+@ca_server.route("/certs/serial", methods=['GET'])
+def serial():
+    return get_serial_number()
+
+def get_serial_number():
+    filename = "/etc/ssl/CA/serial"
+    f = open(filename, "r")
+    serial = f.read()
+    f.close()
+    return serial
+
+@ca_server.route("/certs", methods=['POST', 'DELETE'])
 def certs():
     if request.method == "POST":
         return do_new_cert(request)
-    elif request.method == "GET":
-        return get_serial_number()
     elif request.method == "DELETE":
         return revoke_certificate(request)
 
@@ -29,13 +38,6 @@ def do_new_cert(request):
     os.remove(filename + ".pem")
     return urlsafe_b64encode(crt.encode()).decode()
 
-def get_serial_number():
-    filename = "/etc/ssl/CA/serial"
-    f = open(filename, "r")
-    serial = f.read()
-    f.close()
-    return serial
-
 def revoke_certificate(request):
     filename = "/tmp/"+str(time.time())
     f = open(filename, "w")
@@ -50,7 +52,7 @@ def revoke_certificate(request):
     return "Revocation done"
     
 
-@ca_server.route("/check", methods=["POST"])
+@ca_server.route("/certs/check", methods=["POST"])
 def check_certificate():
     filename = "/tmp/"+str(time.time())
     f = open(filename, "w")
@@ -71,7 +73,7 @@ def check_certificate():
 
 if __name__ == "__main__":
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    context.load_cert_chain('/etc/Flask/certs/ca_cert.pem', '/etc/Flask/private/ca_key.pem')
+    context.load_cert_chain('/etc/Flask/certs/cert.pem', '/etc/Flask/private/key.pem')
     context.verify_mode = ssl.CERT_REQUIRED
-    context.load_verify_locations('/etc/ssl/CA/cacert.pem')
+    context.load_verify_locations('/etc/Flask/certs/cacert.pem')
     ca_server.run(debug=False, ssl_context=context, port= 443, host= '0.0.0.0')
