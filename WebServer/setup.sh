@@ -24,22 +24,23 @@ chmod 755 /home/backup_user/.ssh/authorized_keys
 apt update 
 apt upgrade -y
 apt install -y apache2
-ufw allow 'Apache Full'
 
-#Create directory
-mkdir /var/www/asl_website
-chown -R $USER:$USER /var/www/asl_website
-chmod -R 755 /var/www/asl_website
+#Copy HTML pages, virtual host configuration, certificate and key
+cp /media/asl/WebServer/000-default.conf /etc/apache2/sites-available/000-default.conf
+cp /media/asl/WebServer/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+cp /media/asl/WebServer/asl.ch.crt /etc/ssl/certs/asl.ch.crt
+cp /media/asl/WebServer/asl.ch.key /etc/ssl/private/asl.ch.key
+cp /media/asl/WebServer/index.html /var/www/html/index.html
 
-#Copy HTML pages and virtual host configuration file
-cp /media/asl/WebServer/index.html /var/www/asl_website
-cp /media/asl/WebServer/asl_website.conf /etc/apache2/sites-available/asl_website.conf
+#Test config
+sudo apachectl configtest
 
 #Enable server configuration and disable the default one
-a2ensite asl_website.conf
-a2dissite 000-default.conf
-apache2ctl configtest
+a2enmod rewrite
+a2enmod ssl
+a2ensite default-ssl
+a2ensite 000-default
 
 #Restart apache to take change into account
-systemctl restart apache2
+systemctl restart apache2.service
 
