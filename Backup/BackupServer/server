@@ -18,6 +18,7 @@ def runBackup():
         # Make a tmp directory
         file_system_handler.make_tmp_dir()
         tmp_path = constants.TMP_DIR_PATH
+        tmp_path_2 = constants.TMP_DIR_PATH_2
         try:
             sftp = SFTP(host_ip=constants.IP_ADDRESSES[name], username=constants.USER_BACKUP, key_file=constants.KEY_PATH)
             if not sftp.is_online():
@@ -34,16 +35,23 @@ def runBackup():
             if constants.BACKUP_LETTERBOX[name]:
                 # Empty the letterbox
                 print(indent+'Emptying the letterbox...', end=' ', flush=True)
-                sftp.empty_letterbox(tmp_path)
+                sftp.empty_letterbox(tmp_path_2)
                 print(" [DONE]")
             # Turn tmp into a zip archive with a timestamp    
             arch_name = file_system_handler.zip_dir(dir_path=tmp_path, machine_name=name, timestamp=timestamp)
+            arch_name_letterbox = None
+            if constants.BACKUP_LETTERBOX[name]:
+                arch_name_letterbox = file_system_handler.zip_dir(dir_path=tmp_path_2, machine_name=name, timestamp=timestamp)
             if not arch_name==None:
                 # Move the archive into the backup folder
                 file_system_handler.move_archive(archive_name=arch_name, machine_name=name)
-            # If to many backups are stored remove the oldest one
-            file_system_handler.cleanup_backup_folder(machine_name=name)
+            if not arch_name_letterbox==None:
+                # Move the letterbox archive into the backup folder
+                file_system_handler.move_archive(archive_name=arch_name_letterbox, machine_name=name)
             
+            # If to many backups are stored remove the oldest one (does not affect the letterboxes)
+            file_system_handler.cleanup_backup_folder(machine_name=name)
+           
         except Exception:
             print(indent+"Connection failed...")
             print(indent+"Host "+name+" was not backed up!")
