@@ -16,6 +16,10 @@ cp /media/asl/Core/flask_client2.py /home/ubuntu
 echo "10.0.20.20    ca_server" >> /etc/hosts
 echo "127.0.0.1   core" >> /etc/hosts
 
+#Allow SFTP connetions to Backup Server
+iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
+iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
+
 # Adding a backup_user
 username="backup_user"
 password="ubuntu" #TODO: change the password
