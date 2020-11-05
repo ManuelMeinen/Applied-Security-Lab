@@ -10,7 +10,7 @@ chmod 755 /home/ubuntu/.ssh/backup_sftp_key
 # Install pysftp and python3
 apt-get update
 apt-get upgrade -y
-apt-get -y install python3 python3-pip zip
+apt-get -y install python3 python3-pip zip crontab
 python3 -m pip install pysftp
 
 # Setup backup directories
@@ -31,4 +31,5 @@ chmod 777 ~/backup_VPN
 mkdir ~/BackupServer
 cp /media/asl/Backup/BackupServer/* ~/BackupServer
 chown ubuntu:ubuntu ~/BackupServer/*
-
+# Run backup every hour
+echo "0 * * * * /home/ubuntu/BackupServer/server >> /home/ubuntu/BackupServer/backup_log.txt" | crontab -
