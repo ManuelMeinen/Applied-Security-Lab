@@ -9,7 +9,6 @@ apt-get update
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 apt install python3-pip -y
 pip3 install requests cryptography==3.2.1 Flask
-cp /media/asl/CA/cacert.pem /home/ubuntu/cacert.pem
 cp /media/asl/Core/flask_client.py /home/ubuntu
 cp /media/asl/Core/flask_client2.py /home/ubuntu
 
@@ -46,4 +45,6 @@ cp /media/asl/Core/core_cert.pem /etc/Flask/certs/core_cert.pem
 cp /media/asl/Core/core_key.pem /etc/Flask/private/core_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
 cp /media/asl/Core/flask_server.py /var/www/ca
+
+cp /media/asl/Core/example.p* /home/ubuntu
 python3 /var/www/ca/flask_server.py > /var/log/Flask.log 2>&1 

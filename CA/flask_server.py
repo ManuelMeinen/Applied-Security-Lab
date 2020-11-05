@@ -73,7 +73,7 @@ def check_certificate():
 
 if __name__ == "__main__":
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    context.load_cert_chain('/etc/Flask/certs/cert.pem', '/etc/Flask/private/key.pem')
+    context.load_cert_chain('/etc/Flask/certs/ca_cert.pem', '/etc/Flask/private/ca_key.pem')
     context.verify_mode = ssl.CERT_REQUIRED
     context.load_verify_locations('/etc/Flask/certs/cacert.pem')
     ca_server.run(debug=False, ssl_context=context, port= 443, host= '0.0.0.0')

@@ -19,6 +19,7 @@ touch /etc/ssl/CA/index.txt.attr
 cp /media/asl/CA/openssl.cnf /etc/ssl/
 cp /media/asl/CA/cakey.pem /etc/ssl/CA/private
 cp /media/asl/CA/cacert.pem /etc/ssl/CA
+cp /media/asl/CA/cacert.pem /etc/Flask/certs/
 cp /media/asl/CA/.rnd /home/ubuntu
 echo "01" > /etc/ssl/CA/serial
 echo "01" > /etc/ssl/CA/crlnumber

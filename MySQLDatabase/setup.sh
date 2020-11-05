@@ -3,6 +3,9 @@ echo "Nothing to be set up..."
 ifconfig enp0s3 10.0.20.30 netmask 255.255.255.0 up
 ip route add 192.168.1.0/24 via 10.0.20.40
 
+# Add hosts
+echo "10.0.10.10    core" >> /etc/hosts
+
 #Allow SFTP connetions to Backup Server
 iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
 iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT

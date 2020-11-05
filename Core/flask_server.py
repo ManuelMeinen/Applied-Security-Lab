@@ -45,7 +45,8 @@ def admin():
         stat = {
             "serial"  :  "01",
             "nbreissued" :10,    
-            "nbrerevoked": 5}
+            "nbrerevoked": 5
+            }
         return json.dumps(stat)
     else:
         return "Authentication Failed", 403
@@ -56,13 +57,56 @@ def add_new_user():
         username = request.form["username"]
         password = request.form["password"]
         is_admin = request.form["is_admin"]
-        if username == None or password == None or not (is_admin == "true" or is_admin == "false"):
-            return "Some fields are missing", 400
+        if not (is_admin == "true" or is_admin == "false"):
+            return "is_admin must be 'true' or 'false'", 400
         response = {
             "username": username,
             "is_admin": is_admin
         }
         return json.dumps(response)
+    return "Authentication Failed", 403
+
+@core_server.route("/account", methods=["GET", "POST"])
+def get_account_info():
+    if check_cookie(request):
+        cookie = request.cookies.get("userID")
+        cookie = json.loads(urlsafe_b64decode(cookie.encode()).decode())
+        username = cookie["username"]
+        if request.method == "GET":
+            response = {
+                "username": username,
+                "lastname": "randomLastName",
+                "firstname": "randomFirstName",
+                "email": "randomEmailAddress",
+                "is_certificate_available": "true"
+            }
+        else:
+            response = {
+                "username": username,
+                "lastname": request.form.get("lastname") if request.form.get("lastname") != None else "randomLastName",
+                "firstname": request.form.get("firstname") if request.form.get("firstname") != None else "randomFirstName",
+                "email": request.form.get("email") if request.form.get("email") != None else "randomEmailAddress",
+                "is_certificate_available": "true"
+            }
+        return json.dumps(response)
+    return "Authentication Failed", 403
+
+@core_server.route("/account/certificate", methods=["GET", "POST", "DELETE"])
+def manage_certificate():
+    if check_cookie(request):
+        if request.method == "GET":
+            f = open("/home/ubuntu/example.pem", "r")
+            cert = f.read()
+            f.close()
+            return cert
+        elif request.method == "POST":
+            f = open("/home/ubuntu/example.p12","rb")
+            p12 = f.read()
+            f.close()
+            p12 = urlsafe_b64encode(p12).decode()
+            return p12
+        elif request.method == "DELETE":
+            return "Success"
     return "Authentication Failed", 403
 def check_cookie(request):
     try:
