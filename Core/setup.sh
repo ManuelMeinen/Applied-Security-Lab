@@ -47,5 +47,4 @@ cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
 cp /media/asl/Core/flask_server.py /var/www/ca
 
 cp /media/asl/Core/example.p* /home/ubuntu
-echo "test git"
 python3 /var/www/ca/flask_server.py > /var/log/Flask.log 2>&1 
