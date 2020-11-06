@@ -13,3 +13,6 @@ wg set wg0 peer SdVhpKX4AB3tM5kkg8C1MOmWLicx15xv8DjFsh2VJCo= allowed-ips 10.0.0.
 ip route add 10.0.20.0/24 dev wg0
 # Redirect to have ssh on Firewall
 ip route add 192.168.1.40/32 dev wg0
+# Add CA root cert to trusted cert
+cp /media/asl/CA/cacert.pem /etc/ssl/certs/HomeCA.pem
+update-ca-certificates 

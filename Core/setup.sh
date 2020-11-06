@@ -8,17 +8,16 @@ ip route add 192.168.1.30/32 via 10.0.20.40
 apt-get update
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 apt install python3-pip -y
-pip3 install requests cryptography==3.2.1
-cp /media/asl/CA/cacert.pem /home/ubuntu/cacert.pem
+pip3 install requests cryptography==3.2.1 Flask
 cp /media/asl/Core/flask_client.py /home/ubuntu
-
-mkdir /etc/Flask
-mkdir /etc/Flask/private
-mkdir /etc/Flask/certs
-cp /media/asl/Core/core_cert.pem /etc/Flask/certs/core_cert.pem
-cp /media/asl/Core/core_key.pem /etc/Flask/private/core_key.pem
+cp /media/asl/Core/flask_client2.py /home/ubuntu
 
 echo "10.0.20.20    ca_server" >> /etc/hosts
+echo "127.0.0.1   core" >> /etc/hosts
+
+#Allow SFTP connetions to Backup Server
+iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
+iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
 
 # Adding a backup_user
 username="backup_user"
@@ -35,3 +34,17 @@ mkdir /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh
 cp /media/asl/Core/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
+
+# Flask server
+mkdir /var/www
+mkdir /var/www/ca
+mkdir /etc/Flask
+mkdir /etc/Flask/private
+mkdir /etc/Flask/certs
+cp /media/asl/Core/core_cert.pem /etc/Flask/certs/core_cert.pem
+cp /media/asl/Core/core_key.pem /etc/Flask/private/core_key.pem
+cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
+cp /media/asl/Core/flask_server.py /var/www/ca
+
+cp /media/asl/Core/example.p* /home/ubuntu
+python3 /var/www/ca/flask_server.py > /var/log/Flask.log 2>&1 
