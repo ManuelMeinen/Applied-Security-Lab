@@ -1,11 +1,7 @@
 #!/bin/bash
-echo "Nothing to be set up..."
+echo "Setup environment"
 # Install dependencies
-apt-get update
-apt-get install python3-pip -y 
-# apt-get install nginx uwsgi uwsgi-plugin-python -y
-pip3 install Flask
-# pip3 install virtualenv
+sh /media/asl/CA/installation.sh
 
 # Setup CA
 apt-get install -y openssl
