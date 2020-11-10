@@ -38,14 +38,13 @@ chmod 755 /home/backup_user/.ssh/authorized_keys
 
 # Flask server
 mkdir /var/www
-mkdir /var/www/ca
+mkdir /var/www/core
 mkdir /etc/Flask
 mkdir /etc/Flask/private
 mkdir /etc/Flask/certs
 cp /media/asl/Core/core_cert.pem /etc/Flask/certs/core_cert.pem
 cp /media/asl/Core/core_key.pem /etc/Flask/private/core_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
-cp /media/asl/Core/flask_server.py /var/www/ca
+cp /media/asl/Core/flask_server.py /var/www/core
 
-cp /media/asl/Core/example.p* /home/ubuntu
-python3 /var/www/ca/flask_server.py > /var/log/Flask.log 2>&1 
+python3 /var/www/core/flask_server.py > /var/log/Flask.log 2>&1 

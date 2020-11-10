@@ -1,6 +1,7 @@
 import sql_server
 import json
 from flask import Flask, request
+import ssl
 
 
 app = Flask(__name__)
@@ -244,4 +245,9 @@ def get_all_certs():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.load_cert_chain('/etc/Flask/certs/mysql_cert.pem',
+                            '/etc/Flask/private/mysql_key.pem')
+    context.verify_mode = ssl.CERT_REQUIRED
+    context.load_verify_locations('/etc/Flask/certs/cacert.pem')
+    app.run(debug=False, ssl_context=context, port=443, host='0.0.0.0')
