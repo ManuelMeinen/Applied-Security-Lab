@@ -1,11 +1,7 @@
 #!/bin/bash
-echo "Nothing to be set up..."
+echo "Setup environment"
 # Install dependencies
-apt-get update
-apt-get install python3-pip -y 
-# apt-get install nginx uwsgi uwsgi-plugin-python -y
-pip3 install Flask
-# pip3 install virtualenv
+sh /media/asl/CA/installation.sh
 
 # Setup CA
 apt-get install -y openssl
@@ -19,6 +15,7 @@ touch /etc/ssl/CA/index.txt.attr
 cp /media/asl/CA/openssl.cnf /etc/ssl/
 cp /media/asl/CA/cakey.pem /etc/ssl/CA/private
 cp /media/asl/CA/cacert.pem /etc/ssl/CA
+cp /media/asl/CA/cacert.pem /etc/Flask/certs/
 cp /media/asl/CA/.rnd /home/ubuntu
 echo "01" > /etc/ssl/CA/serial
 echo "01" > /etc/ssl/CA/crlnumber
@@ -42,6 +39,9 @@ iptables -A INPUT -i enp0s3 -s 192.168.1.30 -p tcp --dport 22 -j ACCEPT
 iptables -A OUTPUT -d 192.168.1.30 -p tcp --sport 22 -j ACCEPT
 iptables -A INPUT -i enp0s3 -s 10.0.20.10 -p tcp --dport 443 -j ACCEPT
 iptables -A OUTPUT -d 10.0.20.10 -o enp0s3 -p tcp --sport 443 -j ACCEPT
+#Allow SFTP connetions to Backup Server
+iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
+iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
 
 # Adding a backup_user
 username="backup_user"

@@ -35,9 +35,9 @@ BACKUP_FOLDER = {
 }
 # Backup letterbox
 BACKUP_LETTERBOX = {
-    NAME_CORE:False,
+    NAME_CORE:True,
     NAME_CA:False,
-    NAME_MYSQL_DATABASE:True,
+    NAME_MYSQL_DATABASE:False,
     NAME_FIREWALL:False,
     NAME_WEB_SERVER:False,
     NAME_VPN:False
@@ -52,5 +52,7 @@ BACKUP_DIR = "/backup_dir/"
 BACKUP_DIR_MODE = 703
 HOME_PATH = "/home/ubuntu/"
 TMP_DIR_PATH = "/home/ubuntu/tmp"
+TMP_DIR_PATH_2 = "/home/ubuntu/tmp_2"
+LETTERBOX_TAG = "letterbox_"
 
-NO_OF_BACKUP_VERSIONS = 3 #TODO: find a suitable number
+NO_OF_BACKUP_VERSIONS = 10

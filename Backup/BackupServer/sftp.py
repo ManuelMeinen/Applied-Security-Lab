@@ -131,7 +131,7 @@ class SFTP:
             sftp.put(remotepath=remoteFilePath, localpath=localFilePath)
     
 
-    def empty_letterbox(self, local_dir):#TODO: that doesn't seem to work
+    def empty_letterbox(self, local_dir):
         '''
         Empty the letterbox
         local_dir: this is where the letter box is saved
