@@ -21,6 +21,10 @@ iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
 echo "INSTALLATION OF MYSQL"
 #sudo apt update
 #sudo apt install mysql-server
+#sudo apt install python3-pip
+#pip3 install Flask
+echo "time to install mysql package"
+#pip3 install mysql-connector-python
 sudo mysql -u root < imovies.sql
 
 
