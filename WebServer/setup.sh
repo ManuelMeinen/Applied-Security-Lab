@@ -30,12 +30,15 @@ cp /media/asl/WebServer/000-default.conf /etc/apache2/sites-available/000-defaul
 cp /media/asl/WebServer/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
 cp /media/asl/WebServer/asl.ch.crt /etc/ssl/certs/asl.ch.crt
 cp /media/asl/WebServer/asl.ch.key /etc/ssl/private/asl.ch.key
+
 cp /media/asl/WebServer/index.html /var/www/html/index.html
 cp /media/asl/WebServer/login.html /var/www/html/login.html
 cp /media/asl/WebServer/main.html /var/www/html/main.html
 cp /media/asl/WebServer/ca_admin.html /var/www/html/ca_admin.html
 cp /media/asl/WebServer/cert_issue.html /var/www/html/cert_issue.html
 cp /media/asl/WebServer/cert_revoc.html /var/www/html/cert_revoc.html
+
+cp /media/asl/WebServer/login.php /var/www/html/login.php
 
 #Test config
 sudo apachectl configtest
