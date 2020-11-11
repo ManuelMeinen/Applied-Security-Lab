@@ -16,5 +16,6 @@
   <body>
     <h2>iMovie</h2>
     <p>Welcome to the iMovie website!</p>
+    <a href="logout.php" class="btn btn-danger">Sign Out</a>
   </body>
 </html>

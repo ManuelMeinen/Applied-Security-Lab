@@ -51,13 +51,18 @@ chmod 755 /home/backup_user/.ssh/authorized_keys
 
 cp /media/asl/WebServer/000-default.conf /etc/apache2/sites-available/000-default.conf
 cp /media/asl/WebServer/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-cp /media/asl/WebServer/index.php /var/www/html/index.php
-cp /media/asl/WebServer/login.php /var/www/html/login.php
 cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
 cp /media/asl/WebServer/webserver_key.key /etc/ssl/private/webserver_key.key
+
+cp /media/asl/WebServer/index.php /var/www/html/index.php
+cp /media/asl/WebServer/login.php /var/www/html/login.php
+cp /media/asl/WebServer/logout.php /var/www/html/logout.php
 
 a2enmod ssl
 a2enmod php7.2
 a2ensite 000-default.conf
 a2ensite default-ssl.conf
 systemctl restart apache2.service
+
+# TODO:
+# - configure files access right
