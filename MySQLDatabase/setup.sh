@@ -27,7 +27,6 @@ cp /media/asl/MySQLDatabase/mysql_cert.pem /etc/Flask/certs
 cp /media/asl/MySQLDatabase/mysql_key.pem /etc/Flask/private
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
 sudo mysql -u root < /var/www/mysql/imovies.sql &
->>>>>>> c6afee5c99516878f5e3bc3f77df9526d1bbdd48
 
 
 
