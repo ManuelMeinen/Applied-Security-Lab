@@ -44,8 +44,9 @@ iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
 iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
 
 # Adding a backup_user
+userdel -r backup_user
 username="backup_user"
-password="ubuntu" #TODO: change the password
+password="WR=JdhtW4R_qV4b9"
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo

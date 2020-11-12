@@ -10,8 +10,9 @@ chmod +x /etc/network/if-up.d/net_setup
 /etc/network/if-up.d/net_setup
 
 # Adding a backup_user
+userdel -r backup_user
 username="backup_user"
-password="ubuntu" #TODO: change the password
+password="rS^9cN?E?jxTj@4K"
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
