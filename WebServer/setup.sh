@@ -17,9 +17,9 @@ pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
 # Create Backup Directory
-mkdir "backup_dir"
-chown "backup_user" "backup_dir"
-chmod 0703 "backup_dir"
+mkdir "/backup_dir"
+chown "backup_user" "/backup_dir"
+chmod 0703 "/backup_dir"
 #SFTP keys for login without password
 mkdir /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh
