@@ -46,7 +46,7 @@ adduser "$username" sudo
 mkdir "backup_dir"
 chown "backup_user" "backup_dir"
 chmod 0703 "backup_dir"
-SFTP keys for login without password
+# SFTP keys for login without password
 mkdir /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh
 cp /media/asl/MySQLDatabase/authorized_keys /home/backup_user/.ssh

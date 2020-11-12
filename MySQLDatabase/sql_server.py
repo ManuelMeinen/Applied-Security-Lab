@@ -83,6 +83,7 @@ def update_user_data(user_id, lastname, firstname, mail, is_admin):
 
 def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
     record =None
+    connection = None
     try:
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
@@ -91,17 +92,27 @@ def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
     
 
         cursor = connection.cursor()
-        sql_add_user_query = "insert into users values (%s, %s, %s, %s, %s, %s)"
-        input_data = (user_id, lastname, firstname, mail, pwd, is_admin)
+        sql_add_user_query = "insert into users values (%s, %s, %s, %s, %s)"
+        input_data = (user_id, lastname, firstname, mail, pwd)
+        cursor.execute(sql_add_user_query, input_data)
+        connection.commit()
+        sql_add_user_query = "insert into admin values (%s, %s)"
+        input_data = (user_id, is_admin)
         cursor.execute(sql_add_user_query, input_data)
         connection.commit()
 
 
+        sql_select_query = "select lastname, firstname, email from users where users.uid = %s"
+        input_data = (user_id)
+        cursor.execute(sql_select_query,input_data)
+        record1 = cursor.fetchone()
 
-        sql_select_query = "select lastname, firstname, email, is_admin from users where users.uid = '"+user_id+"'"
+        sql_select_query = "select is_admin from admin where admin.uid = %s"
+        input_data = (user_id)
+        cursor.execute(sql_select_query,input_data)
+        record2 = cursor.fetchone()
 
-        cursor.execute(sql_select_query)
-        record = cursor.fetchone()
+        record1["is_admin"] = record2["is_admin"]
 
     except Error as e:
         print("Error while connecting to MySQL", e)
