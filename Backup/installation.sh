@@ -10,8 +10,13 @@ chmod 755 /home/ubuntu/.ssh/backup_sftp_key
 # Install pysftp and python3
 apt-get update
 apt-get upgrade -y
-apt-get -y install python3 python3-pip zip cron
+apt-get -y install python3 python3-pip zip cron ifupdown
 python3 -m pip install pysftp
+
+# Permanently configure networking stuff
+cp /media/asl/Backup/net_setup /etc/network/if-up.d/
+chmod +x /etc/network/if-up.d/net_setup
+/etc/network/if-up.d/net_setup
 
 # Setup backup directories
 mkdir ~/backup_MySQLDatabase
