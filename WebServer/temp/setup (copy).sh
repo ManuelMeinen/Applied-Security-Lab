@@ -41,28 +41,42 @@ chmod 755 /home/backup_user/.ssh/authorized_keys
 # cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 # chmod 755 /home/backup_user/.ssh/authorized_keys
 
-
-
-
+# #Install web server
 # apt update 
 # apt upgrade -y
-# tasksel install lamp-server
-# apt install php libapache2-mod-php
+# apt install -y apache2
+# apt install php7.2-cli
 
+#Copy HTML pages, virtual host configuration, certificate and key
 cp /media/asl/WebServer/000-default.conf /etc/apache2/sites-available/000-default.conf
 cp /media/asl/WebServer/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
+cp /media/asl/WebServer/webserver_cert.crt /etc/ssl/certs/webserver_cert.crt
 cp /media/asl/WebServer/webserver_key.key /etc/ssl/private/webserver_key.key
 
-cp /media/asl/WebServer/index.php /var/www/html/index.php
+#
+#TODO change permission!
+#
+cp /media/asl/WebServer/index.html /var/www/html/index.html
 cp /media/asl/WebServer/login.php /var/www/html/login.php
-cp /media/asl/WebServer/logout.php /var/www/html/logout.php
+cp /media/asl/WebServer/welcome.php /var/www/html/welcome.php
+# cp /media/asl/WebServer/session.php /var/www/html/session.php
+# cp /media/asl/WebServer/ca_admin.html /var/www/html/ca_admin.html
+# cp /media/asl/WebServer/cert_issue.html /var/www/html/cert_issue.html
+# cp /media/asl/WebServer/cert_revoc.html /var/www/html/cert_revoc.html
 
+# cp /media/asl/WebServer/webserver_flask.py /var/www/html/webserver_flask.py
+
+# #Test config
+sudo apachectl configtest
+
+# #Enable server configuration and disable the default one
+a2enmod rewrite
 a2enmod ssl
-a2enmod php7.2
-a2ensite 000-default.conf
-a2ensite default-ssl.conf
+a2ensite default-ssl
+# a2ensite 000-default
+
+# #Restart apache to take change into account
 systemctl restart apache2.service
 
-# TODO:
-# - configure files access right
+# python /media/asl/WebServer/webserver_flask.py
+
