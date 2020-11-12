@@ -19,7 +19,7 @@ def main():
 
     print("---------Login---------")
     res = session.post("https://core/login", cert=('/etc/Flask/certs/core_cert.pem',
-                                                   '/etc/Flask/private/core_key.pem'), data={'username': "admin", "password": "admin"})
+                                                   '/etc/Flask/private/core_key.pem'), data={'username': "lb", "password": "D15Licz6"})
     print(res.text)
     cookie = res.cookies.get("userID")
     print(cookie)

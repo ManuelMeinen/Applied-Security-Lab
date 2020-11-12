@@ -19,6 +19,8 @@ CREATE TABLE admin (
   PRIMARY KEY (uid)
 );
 
+INSERT INTO admin VALUES ('ps', 0),('lb', 0),('ms', 0),('a3', 0);
+
 CREATE TABLE certificates (
   uid varchar(64) NOT NULL DEFAULT '',
   certificate varchar(1024) NOT NULL DEFAULT '',

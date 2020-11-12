@@ -11,12 +11,23 @@ def get_user_info(user_id):
                                             user='ubuntu', 
                                             password='JT:*g,m,p8{-"95')
     
+        cursor = connection.cursor()
+        sql_select_query = """select lastname, firstname, email from users where users.uid = %s"""
+        cursor.execute(sql_select_query,(user_id,))
+        record1 = cursor.fetchone()
 
         cursor = connection.cursor()
-        sql_select_query = "select lastname, firstname, email, is_admin from users where users.uid = '"+user_id+"'"
+        sql_select_query = """select is_admin from admin where admin.uid = %s"""
+        cursor.execute(sql_select_query,(user_id,))
+        record2 = cursor.fetchone()
 
-        cursor.execute(sql_select_query)
-        record = cursor.fetchone()
+        record = (record1[0], record1[1], record1[2], record2[0])
+
+        # cursor = connection.cursor()
+        # sql_select_query = "select lastname, firstname, email, is_admin from users where users.uid = '"+user_id+"'"
+
+        # cursor.execute(sql_select_query)
+        # record = cursor.fetchone()
 
     except Error as e:
         print("Error while connecting to MySQL", e)
@@ -61,15 +72,30 @@ def update_user_data(user_id, lastname, firstname, mail, is_admin):
     
 
         cursor = connection.cursor()
-        sql_update_query = "update users set lastname= %s , firstname= %s , email= %s , is_admin= %s where uid= %s "
-        input_data = (lastname, firstname, mail, is_admin, user_id)
+        sql_update_query = "update users set lastname= %s , firstname= %s , email= %s  where uid= %s "
+        input_data = (lastname, firstname, mail, user_id)
         cursor.execute(sql_update_query, input_data)
         connection.commit()
 
-        sql_select_query = "select lastname, firstname, email, is_admin from users where users.uid = '"+user_id+"'"
+        cursor = connection.cursor()
+        sql_update_query = "update admin set is_admin= %s where uid= %s "
+        input_data = (is_admin, user_id)
+        cursor.execute(sql_update_query, input_data)
+        connection.commit()
 
-        cursor.execute(sql_select_query)
-        record = cursor.fetchone()
+        sql_select_query = "select lastname, firstname, email from users where users.uid = %s"
+        input_data = (user_id,)
+        cursor.execute(sql_select_query, input_data)
+        record1 = cursor.fetchone()
+        print("---------------Record 1---------------")
+        print(record1)
+
+        sql_select_query = "select is_admin from admin where admin.uid = %s"
+        input_data = (user_id,)
+        cursor.execute(sql_select_query, input_data)
+        record2 = cursor.fetchone()
+
+        record = (record1[0], record1[1], record1[2], record2[0])
 
     except Error as e:
         print("Error while connecting to MySQL", e)
@@ -90,7 +116,6 @@ def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
                                             user='ubuntu', 
                                             password='JT:*g,m,p8{-"95')
     
-        print("------------------------------------OOOOOOOOOOOOOOOOLALLALALALLALALALALALALAALLAL-------------------------------------------")
         cursor = connection.cursor()
         sql_add_user_query = "insert into users values (%s, %s, %s, %s, %s)"
         input_data = (user_id, lastname, firstname, mail, pwd)
@@ -136,6 +161,11 @@ def delete_user(user_id):
 
         cursor = connection.cursor()
         sql_delete_user_query = "delete from users where uid = '"+user_id+"' "
+        cursor.execute(sql_delete_user_query)
+        connection.commit()
+
+        cursor = connection.cursor()
+        sql_delete_user_query = "delete from admin where uid = '"+user_id+"' "
         cursor.execute(sql_delete_user_query)
         connection.commit()
 
