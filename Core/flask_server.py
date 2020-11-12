@@ -41,7 +41,8 @@ def login():
         return "Authentication failed", 403
     timestamp = str(time.time())
     nonce = str(uuid.uuid4().hex)
-    message = username + timestamp + nonce
+    withCert = "true" if certificate!=None else "false"
+    message = username + timestamp + nonce + withCert
     message = message.encode()
     signature = private_key.sign(
         message,
@@ -55,6 +56,7 @@ def login():
         "username": username,
         "timestamp": timestamp,
         "nonce": nonce,
+        "withCert": withCert,
         "signature": urlsafe_b64encode(signature).decode()
     }
     cookie = urlsafe_b64encode(json.dumps(cookie).encode()).decode()
@@ -65,7 +67,8 @@ def login():
 @core_server.route("/admin", methods=["GET"])
 def admin():
     check, username = check_cookie(request)
-    if check and check_is_admin(username) :
+    
+    if check and check_is_admin(username) and check_connected_with_cert(request):
         res = session.get("https://ca_server/certs/serial", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
         serial = res.text.replace("\n","")
         issuedCert, revokedCert = statistics_certificates()
@@ -194,8 +197,9 @@ def check_cookie(request):
         username = cookie["username"]
         timestamp = cookie["timestamp"]
         nonce = cookie["nonce"]
+        withCert = cookie["withCert"]
         signature = urlsafe_b64decode(cookie["signature"].encode())
-        message = username + timestamp + nonce
+        message = username + timestamp + nonce + withCert
         message = message.encode()
         public_key.verify(
             signature,
@@ -219,6 +223,11 @@ def check_is_admin(username):
         if user["username"] == username and user["is_admin"] == "true":
             return True
     return False
+
+def check_connected_with_cert(request):
+    cookie = request.cookies.get("userID")
+    cookie = json.loads(urlsafe_b64decode(cookie.encode()).decode())
+    return cookie["withCert"] == "true"
 
 def check_user_credential(username, password, certificate):
         if certificate:
