@@ -16,7 +16,7 @@ INSERT INTO users VALUES ('ps','Schaller','Patrick','ps@imovies.ch','6e58f76f5be
 
 CREATE TABLE certificates (
   uid varchar(64) NOT NULL DEFAULT '',
-  certificate varchar(64) NOT NULL DEFAULT '',
+  certificate varchar(1024) NOT NULL DEFAULT '',
   PRIMARY KEY (certificate)
 );
 

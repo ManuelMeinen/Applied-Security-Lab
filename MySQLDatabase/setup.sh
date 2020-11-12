@@ -9,7 +9,7 @@ echo "10.0.20.30    mysql" >> /etc/hosts
 
 #install mysql
 echo "INSTALLATION OF MYSQL"
-#sh /media/asl/MySQLDatabase/installation.sh
+sh /media/asl/MySQLDatabase/installation.sh
 echo "time to install mysql package"
 
 #copy files for mysql

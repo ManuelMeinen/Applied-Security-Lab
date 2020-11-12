@@ -2,23 +2,13 @@ import requests
 import time
 import json
 
-from flask import Flask, request
-
-
-app = Flask(__name__)
 cafile = "/etc/Flask/certs/cacert.pem"
 session = requests.Session()
 session.verify = cafile
 
 
-@app.route('/')
-def hello():
-    return 'Welcome to MySQL server!'
-    
-
 
 if __name__ == '__main__':
-    time.sleep(3)
     json_id = '{"uid": "ms"}'
 
     # GET PASSWORD GIVEN UID

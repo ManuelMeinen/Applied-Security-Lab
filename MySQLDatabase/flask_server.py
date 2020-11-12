@@ -223,7 +223,7 @@ def get_all_certs():
     uid = data['uid']
 
     certs = sql_server.get_certs(uid)
-
+    # This condition is never fullfilled, even if no certificate
     if certs is None:
         return '{"certificates": []}'
 
@@ -232,7 +232,7 @@ def get_all_certs():
     string_certs = '['
     for c in certs:
         string_certs = string_certs + '"'+ c+ '"'+','
-    string_certs = string_certs[:-1]
+    string_certs = string_certs[:-1] if string_certs[-1] == ',' else string_certs
     string_certs = string_certs + ']'
 
     print("STRING CERTS", string_certs)
