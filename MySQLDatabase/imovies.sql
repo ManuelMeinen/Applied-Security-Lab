@@ -22,7 +22,7 @@ CREATE TABLE admin (
 CREATE TABLE certificates (
   uid varchar(64) NOT NULL DEFAULT '',
   certificate varchar(1024) NOT NULL DEFAULT '',
-  revoked BOOLEAN NOT NULL DEFAULT 0
+  revoked BOOLEAN NOT NULL DEFAULT 0,
 
   PRIMARY KEY (certificate)
 );

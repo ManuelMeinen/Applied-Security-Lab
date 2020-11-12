@@ -90,7 +90,7 @@ def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
                                             user='ubuntu', 
                                             password='JT:*g,m,p8{-"95')
     
-
+        print("------------------------------------OOOOOOOOOOOOOOOOLALLALALALLALALALALALALAALLAL-------------------------------------------")
         cursor = connection.cursor()
         sql_add_user_query = "insert into users values (%s, %s, %s, %s, %s)"
         input_data = (user_id, lastname, firstname, mail, pwd)
@@ -101,18 +101,17 @@ def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
         cursor.execute(sql_add_user_query, input_data)
         connection.commit()
 
-
-        sql_select_query = "select lastname, firstname, email from users where users.uid = %s"
-        input_data = (user_id)
-        cursor.execute(sql_select_query,input_data)
+        cursor = connection.cursor()
+        sql_select_query = """select lastname, firstname, email from users where users.uid = %s"""
+        cursor.execute(sql_select_query,(user_id,))
         record1 = cursor.fetchone()
 
-        sql_select_query = "select is_admin from admin where admin.uid = %s"
-        input_data = (user_id)
-        cursor.execute(sql_select_query,input_data)
+        cursor = connection.cursor()
+        sql_select_query = """select is_admin from admin where admin.uid = %s"""
+        cursor.execute(sql_select_query,(user_id,))
         record2 = cursor.fetchone()
 
-        record1["is_admin"] = record2["is_admin"]
+        record = (record1[0], record1[1], record1[2], record2[0])
 
     except Error as e:
         print("Error while connecting to MySQL", e)
