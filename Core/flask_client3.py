@@ -15,7 +15,7 @@ def main():
     addr_add_user = 'https://mysql/add_user'
     response_add_user = session.post(addr_add_user, data=json_add_user, cert=(
         '/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
-    print(json.loads(response_add_user.content.decode('utf-8')))
+    print(response_add_user.content.decode('utf-8'))
 
     print("---------Login---------")
     res = session.post("https://core/login", cert=('/etc/Flask/certs/core_cert.pem',

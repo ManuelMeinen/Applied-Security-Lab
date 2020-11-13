@@ -2,13 +2,23 @@ import requests
 import time
 import json
 
+from flask import Flask, request
+
+
+app = Flask(__name__)
 cafile = "/etc/Flask/certs/cacert.pem"
 session = requests.Session()
 session.verify = cafile
 
 
+@app.route('/')
+def hello():
+    return 'Welcome to MySQL server!'
+    
+
 
 if __name__ == '__main__':
+    time.sleep(3)
     json_id = '{"uid": "ms"}'
 
     
@@ -105,7 +115,3 @@ if __name__ == '__main__':
     addr_stats = 'https://mysql/certs_stats'
     response_stats = session.post(addr_stats, cert=('/etc/Flask/certs/mysql_cert.pem', '/etc/Flask/private/mysql_key.pem'))
     print(json.loads(response_stats.content.decode('utf-8')))
-
-
-
-
