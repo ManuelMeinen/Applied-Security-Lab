@@ -87,8 +87,6 @@ def update_user_data(user_id, lastname, firstname, mail, is_admin):
         input_data = (user_id,)
         cursor.execute(sql_select_query, input_data)
         record1 = cursor.fetchone()
-        print("---------------Record 1---------------")
-        print(record1)
 
         sql_select_query = "select is_admin from admin where admin.uid = %s"
         input_data = (user_id,)

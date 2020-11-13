@@ -145,7 +145,7 @@ def get_account_info():
             "lastname": res["lastname"],
             "firstname": res["firstname"],
             "email": res["mail"],
-            "has_certificate_available": has_valid_certificate(username) != 0
+            "has_certificate_available": has_valid_certificate(username) != None
             }
         return json.dumps(response)
     return "Authentication Failed", 403
@@ -157,7 +157,7 @@ def manage_certificate():
     if check:
         if request.method == "GET":
             cert = has_valid_certificate(username)
-            if cert!=0:
+            if cert== None:
                 return "No valid certificate", 404
             return cert
             # f = open("/home/ubuntu/example.pem", "r")
@@ -165,11 +165,13 @@ def manage_certificate():
             # f.close()
             # return cert
         elif request.method == "POST":
-            if has_valid_certificate(username) != 0:
+            if has_valid_certificate(username) != None:
                 return "A valid cert already exists", 400
             [private_key, csr] = create_CSR(username)
             res = session.post("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'csr': csr})
-            add_certificate(username, res.text)
+            if add_certificate(username, res.text) != 200:
+                res.session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': res.text})
+                return "Error was not added", 500
             pkcs12 = create_pkcs12(username, private_key, res.text)
             # f = open("/home/ubuntu/example.p12", "rb")
             # p12 = f.read()
@@ -181,10 +183,12 @@ def manage_certificate():
             idx, user = find_user(username)
             if cert != 0:
                 session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': cert})
-                for idx2, tmpCert in enumerate(user["certificates"]):
-                    if tmpCert["crt"] == cert:
-                        users[idx]["certificates"][idx2]["revoked"] = "true"
+                session.post("https://mysql/delete_user_certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'certificate': cert})
                 return "Success"
+                # for idx2, tmpCert in enumerate(user["certificates"]):
+                #     if tmpCert["crt"] == cert:
+                #         users[idx]["certificates"][idx2]["revoked"] = "true"
+                # return "Success"
             else:
                 return "No valid certificate to revoke", 400
     return "Authentication Failed", 403
@@ -277,14 +281,21 @@ def has_valid_certificate(username):
     request_json = {"uid": username}
     res = session.post("https://mysql/all_certs", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     res = json.loads(res.content)
-    return len(res["certificates"])
+    if len(res["certificates"])==0:
+        return None
+    
+    return res["certificates"][0]
     # return len(res["certificates"])
     # return None
 
 def add_certificate(username, crt):
-    idx, user = find_user(username)
-    user["certificates"].append({"crt": crt, "revoked": "false"})
-    users[idx] = user
+    # idx, user = find_user(username)
+    # user["certificates"].append({"crt": crt, "revoked": "false"})
+    # users[idx] = user
+    request_json = {"uid": username, "certificate": crt}
+    res = session.post("https://mysql/add_user_certificate", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    print(res.text)
+    return res.status_code
 
 def hash_password(password):
     m = sha1()

@@ -56,6 +56,23 @@ def main():
     print(res.text)
     session.cookies.clear()
 
+    print("---------Create certificate---------")
+    res = session.post("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie}, data={})
+    #print(res.text)
+    session.cookies.clear()
+    # print("--------------Check if it has valid cert--------------")
+    # res = session.get("https://core/account", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
+    # print(res.text)
+    # session.cookies.clear()
+    # res = session.get("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
+    # future_cert = res.text
+    # print(future_cert)
+    # session.cookies.clear()
+    # print("--------------Revoke Cert--------------")
+    # res = session.delete("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
+    # print(res.text)
+    # session.cookies.clear()
+
     print("---------Clear DB---------")
     addr_delete_user = 'https://mysql/delete_user'
     json_id = '{"uid": "admin"}'
