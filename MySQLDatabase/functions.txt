@@ -1,0 +1,60 @@
+GET PASSWORD
+input: json with uid
+output: json with pwd
+errors: -400 if bad input (not a json)
+	-400 if missing uid in input
+	-404 problems to find the password
+	
+GET INFO
+input: json with uid
+output: json with lastname, firstname, mail, is_admin
+errors: -400 if bad input (not a json)
+	-400 if missing uid in input
+	-404 users infos not found
+	
+UPDATE INFO
+input: json with uid (mandatory), and all fields to update (could be lastname, firstname, mail, pwd, is_admin)
+output: json with all fields (new values) of the user
+errors: -400 if bad input (not a json)
+	-400 if missing uid in input
+	-404 no user with this uid found
+	-520 for some reasons no infos about updated user are available
+	
+ADD USER:
+input: json with all fields (uid and pwd mandatory, others would be replaced by "" if missing)
+output: http 200 answer with a smiley
+errors: -400 if bad input (not a json)
+	-400 if missing uid or pwd in input
+	
+ADD CERTIFICATE:
+input: json with uid and certificate (mandatory)
+output: https answer with a smiley
+errors: -400 if bad input (not a json)
+	-400 if missing uid or certificate in input
+	-520 if added certificate is not in the table
+	
+REVOKE CERTIFICATE
+input: json with certificate
+output: https 200 answer if everything ok, 520 if not okay
+errors: -400 if bad input (not a json)
+	-400 if missing certificate in input
+	-520 if something went wrong
+	
+GET UID FROM CERTIFICATE
+input: json with certificate
+output: json with uid
+errors: -400 if bad input (not a json)
+	-400 if missing certificate in input
+	-404 uid not found
+	
+GET ALL CERTS
+input: json with uid
+output: json with certificates: list of certificates
+errors: -400 if bad input (not a json)
+	-400 if missing uid in input
+
+GET STATS
+input: nothing
+output: json with total number of certificates (int) and total number of revoked certificates
+	
+	

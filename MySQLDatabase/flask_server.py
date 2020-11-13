@@ -18,12 +18,20 @@ def get_password():
     return user's hashed password as json {"pwd":"hashed_pwd"}, if not found then hashed_pwd=empty string
     post a json request with user's uid in the json
     '''
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400
+
     data = json.loads(request.data)
+
+    if 'uid' not in data:
+        return "Missing the uid parameter",400
+
     uid = data['uid']
     response = sql_server.get_password(uid)
 
+
     if response is None:
-        return '{"pwd": ""}'
+        return "Password not found", 404
     
     json_response = '{"pwd":"'+response[0]+'"}'
 
@@ -31,27 +39,33 @@ def get_password():
 
 @app.route('/get_info', methods=['POST'])
 def get_info():
-    '''
-    return user's info (lastname, firstname, mail, is_admin), as json string, 
-    if not found then empty json
-    post a json request with user's uid in the json
-    '''
+
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400
+
     data = json.loads(request.data)
+
+
+    if 'uid' not in data:
+        return "Missing the uid parameter",400
+
     uid = data['uid']
 
     user_info_list = sql_server.get_user_info(uid)
 
-    if user_info_list is None:
-        user_info_list=['', '', '', '']
-    
-    is_admin = 0
-    if user_info_list[3]==1:
-        is_admin='true'
-    else:
-        is_admin='false'
+    user_is_admin = sql_server.get_admin_info(uid)
 
+    if user_info_list is None:
+        return "users infos not found", 404
+
+    if user_is_admin is None:
+        user_is_admin = 'false'
+    elif user_is_admin[0]==1:
+        user_is_admin = 'true'
+    else:
+        user_is_admin = 'false'
     
-    json_response = '{"lastname":"'+user_info_list[0]+'", "firstname":"'+user_info_list[1]+'", "mail":"'+user_info_list[2]+'", "is_admin":'+is_admin+'}'
+    json_response = '{"lastname":"'+user_info_list[0]+'", "firstname":"'+user_info_list[1]+'", "mail":"'+user_info_list[2]+'", "is_admin":'+user_is_admin+'}'
 
     return json_response
 
@@ -62,13 +76,26 @@ def update_info():
     needs the uid string in the post request, as well as the fields that will be updated
     return the updated json
     '''
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400
+
     data = json.loads(request.data)
+
+
+    if 'uid' not in data:
+        return "Missing the uid parameter",400
+
     uid = data['uid']
 
+    #returns lastname, firstname, mail
     user_info_list = sql_server.get_user_info(uid)
+    #pwd
+    user_pwd = sql_server.get_password(uid)
+    #is_admin
+    user_is_admin = sql_server.get_admin_info(uid)
 
     if user_info_list is None:
-        return '{"lastname":"", "firstname":"", "mail":"", "is_admin":false}'
+        return "no user found", 404
     
     lastname = user_info_list[0]
     if 'lastname' in data:
@@ -81,23 +108,35 @@ def update_info():
     mail = user_info_list[2]
     if 'mail' in data:
         mail = data['mail']
-    
-    is_admin = user_info_list[3]
+
+    password = user_pwd[0]
+    if 'pwd' in data:
+        password = data['pwd']
+
+    is_admin = user_is_admin[0]
     if 'is_admin' in data:
-        if data['is_admin']:
-            is_admin=1
-        else:
-            is_admin=0
+        is_admin = data['is_admin']
+
     
-    user_new_info_list = sql_server.update_user_data(uid, lastname, firstname, mail, is_admin)
+    user_new_info_list = sql_server.update_user_data(uid, lastname, firstname, mail, password, is_admin)
 
-    is_admin = 0
-    if user_new_info_list[3]==1:
-        is_admin='true'
+    user_info_list = sql_server.get_user_info(uid)
+
+    user_is_admin = sql_server.get_admin_info(uid)
+
+    if user_info_list is None:
+        return "We got a problem, sorry user not updated", 520
+
+    if user_is_admin is None:
+        user_is_admin = 'false'
+    elif user_is_admin[0]==1:
+        user_is_admin = 'true'
     else:
-        is_admin='false'
+        user_is_admin = 'false'
 
-    json_response = '{"lastname":"'+user_new_info_list[0]+'", "firstname":"'+user_new_info_list[1]+'", "mail":"'+user_new_info_list[2]+'", "is_admin":'+is_admin+'}'
+    password = sql_server.get_password(uid)[0]
+    
+    json_response = '{"lastname":"'+user_info_list[0]+'", "firstname":"'+user_info_list[1]+'", "mail":"'+user_info_list[2]+'", "pwd":"'+password+'", "is_admin":'+user_is_admin+'}'
 
     return json_response
 
@@ -108,10 +147,14 @@ def add_user():
     '''
     needs full json, if uid or pwd not present, nothing would be added, everything else is replaced by default values if absent
     '''
+
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400
+
     data = json.loads(request.data)
 
     if ('uid' not in data) or ('pwd' not in data):
-        return '{"lastname":"", "firstname":"", "mail":"", "is_admin":false}'
+        return "Missing the uid or pwd parameter",400
     
     uid= data['uid']
     password = data['pwd']
@@ -138,42 +181,19 @@ def add_user():
 
     new_user_info = sql_server.add_user(uid, lastname, firstname, mail, password, is_admin)
 
-    if new_user_info is None:
-        return '{"lastname":"", "firstname":"", "mail":"", "is_admin":false}'
-    
-    is_admin = 0
-    if new_user_info[3]==1:
-        is_admin='true'
-    else:
-        is_admin='false'
 
-    
-    json_response = '{"lastname":"'+new_user_info[0]+'", "firstname":"'+new_user_info[1]+'", "mail":"'+new_user_info[2]+'", "is_admin":'+is_admin+'}'
-
-    return json_response
-
-@app.route('/delete_user', methods=['POST'])
-def delete_user():
-    '''
-    with the uid, delete everything from users_info and users_certificates tables
-    return json deleted=0 if everything okay, else:deleted=1 
-    '''
-    
-    data = json.loads(request.data)
-    uid = data['uid']
-
-    user_deleted = sql_server.delete_user(uid)
-
-    if user_deleted:
-        return '{"deleted": 0}'
-    else:
-        return '{"deleted": 1}'
-
-    return '{"deleted": 1}'
+    return ":)", 200
 
 @app.route('/add_user_certificate', methods=['POST'])
 def add_certificate():
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400
+
     data = json.loads(request.data)
+
+    if ('uid' not in data) or ('certificate' not in data):
+        return "Missing the uid or certificate parameter",400
+
     uid = data['uid']
 
     certificate = ''
@@ -183,48 +203,72 @@ def add_certificate():
     added_row = sql_server.add_certificate(uid, certificate)
 
     if added_row is None:
-        return '{"uid":"", "certificate": ""}'
+        return "Something went wrong, sorry", 520
 
-    json_response = '{"uid":"'+added_row[0]+'", "certificate": "'+added_row[1]+'"}'
+    return ":)", 200
 
-    return json_response
+@app.route('/revoke_user_certificate', methods=['POST'])
+def revoke_certificate():
 
-@app.route('/delete_user_certificate', methods=['POST'])
-def delete_certificate():
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400
+
     data = json.loads(request.data)
+
+
+    if 'certificate' not in data:
+        return "Missing the certificate parameter",400
+
     certificate = data['certificate']
 
     deleted_cert = sql_server.delete_certificate(certificate)
 
-    if deleted_cert:
-        return '{"deleted": 0}'
-    else:
-        return '{"deleted": 1}'
 
-    return '{"deleted": 1}'
+    if deleted_cert:
+        return ":)", 200
+    else:
+        return "the certificate was not revoked :(", 520
+
+    return "the certificate was not revoked :(", 520
 
 
 @app.route('/who_has_this_cert', methods=['POST'])
 def get_uid_from_cert():
+
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400    
+
     data = json.loads(request.data)
+
+    if 'certificate' not in data:
+        return "Missing the certificate parameter",400
+
     certificate = data['certificate']
 
     uid = sql_server.get_uid_from_cert(certificate)
 
     if uid is None:
-        return '{"uid": ""}'
+        return "No uid found :( ", 404
     
     return '{"uid": "'+uid[0]+'"}'
 
 
 @app.route('/all_certs', methods=['POST'])
 def get_all_certs():
+
+    if not is_json(request.data):
+        return "Not valid JSON as input", 400
+
     data = json.loads(request.data)
+
+    if 'uid' not in data:
+        return "Missing the uid parameter",400
+
     uid = data['uid']
 
     certs = sql_server.get_certs(uid)
 
-    if certs is None:
+    if not certs:
         return '{"certificates": []}'
 
     certs = [e[0] for e in certs]
@@ -242,9 +286,31 @@ def get_all_certs():
     return response_json
 
 
+@app.route('/certs_stats', methods=['POST'])
+def get_stats():
+
+    stats = sql_server.get_stats()
+    n_certs, n_revoked = stats[0]
+
+    if n_revoked is None:
+        n_revoked = 0
+    else:
+        n_revoked = int(n_revoked)
+
+    return '{"number_certificates":'+str(n_certs)+',"number_revoked":'+str(n_revoked)+'}'
+
+
+def is_json(myjson):
+  try:
+    json_object = json.loads(myjson)
+  except ValueError as e:
+    return False
+  return True
+
 
 
 if __name__ == '__main__':
+
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     context.load_cert_chain('/etc/Flask/certs/mysql_cert.pem',
                             '/etc/Flask/private/mysql_key.pem')

@@ -16,13 +16,16 @@ INSERT INTO users VALUES ('ps','Schaller','Patrick','ps@imovies.ch','6e58f76f5be
 CREATE TABLE admin (
   uid varchar(64) NOT NULL DEFAULT '',
   is_admin BOOLEAN NOT NULL DEFAULT 0,
-  PRIMARY KEY (uid)
+  FOREIGN KEY (uid) REFERENCES users (uid)
+  ON DELETE CASCADE
 );
+
+INSERT INTO admin VALUES ('ps', 0), ('lb', 0), ('ms', 0), ('a3', 0);
 
 CREATE TABLE certificates (
   uid varchar(64) NOT NULL DEFAULT '',
   certificate varchar(64) NOT NULL DEFAULT '',
-  revoked BOOLEAN NOT NULL DEFAULT 0
+  revoked BOOLEAN NOT NULL DEFAULT 0,
   PRIMARY KEY (certificate)
 );
 
