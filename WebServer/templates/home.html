@@ -4,10 +4,38 @@
   </head>
   <body>
     <h2>Welcome to iMovie</h2>
-    <form action="https://webserver/logout">
+    <form action="https://webserver/cert_issuance/show_info" method="get">
       <div class="form-group">
-        <input type="submit" class="btn btn-lg btn-primary" value="Log out">
+        <input type="submit" class="btn" value="Certificate issuance">
       </div>
     </form>
+    <form action="https://webserver/cert_revocation">
+      <div class="form-group">
+        <input type="submit" class="btn" value="Certificate revocation">
+      </div>
+    </form>
+    <form action="https://webserver/ca_admin">
+      <div class="form-group">
+        <input type="submit" class="btn" value="CA admin">
+      </div>
+    </form>
+    <form action="https://webserver/logout" method="post">
+      <div class="form-group">
+        <input type="submit" class="btn" value="Log out">
+      </div>
+    </form>
+    <div class="container" style="min-height:100% width:80%">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-warning" role="alert">
+          {{message}}
+          </div>
+        {% endfor %}
+        {% endif %}
+      {% endwith %}
+      
+      {% block body %}{% endblock %}
+      </div> 
   </body>
 </html>

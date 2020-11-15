@@ -28,10 +28,12 @@ cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
 #Install necessary software and library
-apt update 
-apt upgrade -y
-apt install python3-pip -y
-pip3 install requests Flask
+# apt update 
+# apt upgrade -y
+# apt install python3-pip -y
+# pip3 install requests Flask
+# pip3 install Flask-WTF
+# pip3 install email_validator
 
 #Allow http request to Core Server
 iptables -A OUTPUT -d 10.0.10.10 -p tcp --sport 443 -j ACCEPT
@@ -48,6 +50,8 @@ cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
 mkdir /var/www/webserver/templates
 cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
 cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
+cp /media/asl/WebServer/templates/cert_issuance_show_info.html /var/www/webserver/templates/cert_issuance_show_info.html
+cp /media/asl/WebServer/templates/cert_issuance_download_cert.html /var/www/webserver/templates/cert_issuance_download_cert.html
 
 #Run server
 python3 /var/www/webserver/webserver_flask.py
