@@ -65,7 +65,7 @@ def login():
 class cert_issuance_show_info_form(FlaskForm):
     lastname = StringField("Lastname: ", validators=[DataRequired()])
     firstname = StringField("Firstname: ", validators=[DataRequired()])
-    email = StringField("Email: ", validators=[Email()])
+    email = StringField("Email: ", validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 @app.route('/cert_issuance/show_info', methods=['GET'])
@@ -78,8 +78,9 @@ def cert_issuance_show_info():
     #     return home()
 
     # if response != None and response.ok:
-    #     # todo
-    #     return render_template('cert_issuance.html')
+    #     data = json.loads(response.content)
+    #     form = cert_issuance_show_info_form()
+    #     return render_template('cert_issuance_show_info.html', form=form, lastname=data['lastname'], firstname=data['firstname'], email=data['email'])
     # else:
     #     flash('An error occurs!')
     #     return home() 
@@ -90,9 +91,6 @@ def cert_issuance_show_info():
     #
     if request.cookies.get(userid):
         form = cert_issuance_show_info_form()
-        if form.validate() == False:
-            flash('All fields are required.')
-            return render_template('cert_issuance_show_info.html', form=form, lastname="Jean-Bernard", firstname="Petolet", email="jb.petolet@asl.ch")
         return render_template('cert_issuance_show_info.html', form=form, lastname="Jean-Bernard", firstname="Petolet", email="jb.petolet@asl.ch")
     else:
         flash('An error occurs!')
@@ -100,6 +98,7 @@ def cert_issuance_show_info():
 
 @app.route('/cert_issuance/issue', methods=['post'])
 def cert_issuance_issue():
+    #check inputs form! 
     return render_template('cert_issuance_download_cert.html')
 
 @app.route("/logout", methods=['POST'])
