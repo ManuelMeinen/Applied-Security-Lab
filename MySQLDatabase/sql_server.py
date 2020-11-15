@@ -245,7 +245,7 @@ def get_certs(uid):
     
 
         cursor = connection.cursor()
-        sql_select_query = "select certificate from certificates where uid = %s"
+        sql_select_query = "select certificate from certificates where uid = %s and revoked=0 "
         input_data = (uid, )
         cursor.execute(sql_select_query, input_data)
         record = cursor.fetchall()

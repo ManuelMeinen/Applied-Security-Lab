@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     #GET ALL CERTIFICATES OF A USER
     print('\x1b[6;30;42m' + 'GETTING ALL CERTIFIACTES OF A USER' + '\x1b[0m')
-    json_uid = '{"uid": "vp"}'
+    json_uid = '{"uid": "a3"}'
     addr_all_certs = 'https://mysql/all_certs'
     response_all_certs = session.post(addr_all_certs, data=json_uid, cert=('/etc/Flask/certs/mysql_cert.pem', '/etc/Flask/private/mysql_key.pem'))
     print(response_all_certs.content.decode('utf-8'))
