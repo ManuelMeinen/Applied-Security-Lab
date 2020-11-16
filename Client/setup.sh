@@ -5,6 +5,7 @@ ip route add 192.168.1.0/24 dev enp0s8
 
 # Add hosts
 echo "192.168.1.20    webserver" >> /etc/hosts
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 # Create VPN connection with wireguard
 cp /media/asl/Client/wg_private /home/ubuntu/.ssh/

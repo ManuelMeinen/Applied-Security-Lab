@@ -94,7 +94,8 @@ def get_account_info():
             user["firstname"] = request.form.get("firstname") if request.form.get("firstname") != None else res["firstname"]
             user["mail"] = request.form.get("email") if request.form.get("email") != None else res["mail"]
             # Add possibility to modify password
-            user["pwd"] = hash_password(request.form.get("password")) if request.form.get("password") != None else res["pwd"]
+            if request.form.get("password"):
+                user["pwd"] = hash_password(request.form.get("password"))
             res = session.post("https://mysql/update", data=json.dumps(user), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
             if res.status_code == 404 or res.status_code == 400:
                 return "User not known", 404
@@ -121,10 +122,7 @@ def manage_certificate():
             if cert== None:
                 return "No valid certificate", 404
             return urlsafe_b64decode(cert.encode()).decode()
-            # f = open("/home/ubuntu/example.pem", "r")
-            # cert = f.read()
-            # f.close()
-            # return cert
+        
         elif request.method == "POST":
             if has_valid_certificate(username) != None:
                 return "A valid cert already exists", 400
