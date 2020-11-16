@@ -6,6 +6,7 @@ ip route add 10.0.20.50 via 192.168.1.40
 
 # Add hosts
 echo "10.0.10.10    core" >> /etc/hosts
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 #Allow SFTP connetions to Backup Server
 iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
@@ -28,12 +29,12 @@ cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
 #Install necessary software and library
-# apt update 
-# apt upgrade -y
-# apt install python3-pip -y
-# pip3 install requests Flask
-# pip3 install Flask-WTF
-# pip3 install email_validator
+apt update 
+apt upgrade -y
+apt install python3-pip -y
+pip3 install requests Flask
+pip3 install Flask-WTF
+pip3 install email_validator
 
 #Allow http request to Core Server
 iptables -A OUTPUT -d 10.0.10.10 -p tcp --sport 443 -j ACCEPT
@@ -44,10 +45,10 @@ cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
 cp /media/asl/WebServer/webserver_key.pem /etc/ssl/private/webserver_key.pem
 cp /media/asl/Core/core_cert.pem /etc/ssl/certs/core_cert.pem
 
-mkdir /var/www/webserver/
+mkdir -p /var/www/webserver/
 cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
 
-mkdir /var/www/webserver/templates
+mkdir -p /var/www/webserver/templates
 cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
 cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
 cp /media/asl/WebServer/templates/cert_issuance_show_info.html /var/www/webserver/templates/cert_issuance_show_info.html
