@@ -14,14 +14,7 @@ def get_user_info(user_id):
         cursor = connection.cursor()
         sql_select_query = """select lastname, firstname, email from users where users.uid = %s"""
         cursor.execute(sql_select_query,(user_id,))
-        record1 = cursor.fetchone()
-
-        cursor = connection.cursor()
-        sql_select_query = """select is_admin from admin where admin.uid = %s"""
-        cursor.execute(sql_select_query,(user_id,))
-        record2 = cursor.fetchone()
-
-        record = (record1[0], record1[1], record1[2], record2[0])
+        record = cursor.fetchone()
 
         # cursor = connection.cursor()
         # sql_select_query = "select lastname, firstname, email, is_admin from users where users.uid = '"+user_id+"'"

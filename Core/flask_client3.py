@@ -73,19 +73,6 @@ def main():
     # print(res.text)
     # session.cookies.clear()
 
-    print("---------Clear DB---------")
-    addr_delete_user = 'https://mysql/delete_user'
-    json_id = '{"uid": "admin"}'
-    response_delete_user = session.post(addr_delete_user, data=json_id, cert=(
-        '/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
-    print(response_delete_user)
-    print(json.loads(response_delete_user.content.decode('utf-8')))
-    addr_delete_user = 'https://mysql/delete_user'
-    json_id = '{"uid": "' + username_new_user + '"}'
-    response_delete_user = session.post(addr_delete_user, data=json_id, cert=(
-        '/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
-    print(response_delete_user)
-    print(json.loads(response_delete_user.content.decode('utf-8')))
 
 
 if __name__ == "__main__":
