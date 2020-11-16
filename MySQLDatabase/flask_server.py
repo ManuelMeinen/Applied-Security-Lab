@@ -199,7 +199,7 @@ def add_certificate():
     certificate = ''
     if 'certificate' in data:
         certificate=data['certificate']
-
+    print(certificate)
     added_row = sql_server.add_certificate(uid, certificate)
 
     if added_row is None:

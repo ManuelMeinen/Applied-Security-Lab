@@ -19,34 +19,34 @@ def main():
 
     print("---------Login---------")
     res = session.post("https://core/login", cert=('/etc/Flask/certs/core_cert.pem',
-                                                   '/etc/Flask/private/core_key.pem'), data={'username': "lb", "password": "D15Licz6"})
+                                                   '/etc/Flask/private/core_key.pem'), data={'username': "admin", "password": "KK38O!M=HiCC20g9mS_gFgC"})
     print(res.text)
     cookie = res.cookies.get("userID")
     print(cookie)
 
-    print("---------Admin---------")
-    res = session.get("https://core/admin", cert=('/etc/Flask/certs/core_cert.pem',
-                                                  '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
-    print(res.text)
-    session.cookies.clear()
-    res = session.get("https://core/admin", cert=('/etc/Flask/certs/core_cert.pem',
-                                                  '/etc/Flask/private/core_key.pem'), cookies={'userID': "hello_world"})
-    print(res.text)
-    session.cookies.clear()
+    # print("---------Admin---------")
+    # res = session.get("https://core/admin", cert=('/etc/Flask/certs/core_cert.pem',
+    #                                               '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
+    # print(res.text)
+    # session.cookies.clear()
+    # res = session.get("https://core/admin", cert=('/etc/Flask/certs/core_cert.pem',
+    #                                               '/etc/Flask/private/core_key.pem'), cookies={'userID': "hello_world"})
+    # print(res.text)
+    # session.cookies.clear()
 
-    print("---------New User---------")
-    res = session.post("https://core/admin/newuser", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie}, data={
-                       "username": username_new_user, "is_admin": "false", "password": "iamTheKingOfTheWorld", "lastname": "Soron", "firstname": "TheGood", "email": "soron@dol_guldur.me"})
-    print(res.text)
-    session.cookies.clear()
-    res = session.post("https://core/admin/newuser", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'),
-                       cookies={'userID': cookie}, data={"username": username_new_user, "is_admin": "forSure", "password": "iamTheKingOfTheWorld"})
-    print(res)
-    session.cookies.clear()
-    res = session.post("https://core/admin/newuser", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'),
-                       cookies={'userID': cookie}, data={"username": username_new_user, "password": "iamTheKingOfTheWorld"})
-    print(res)
-    session.cookies.clear()
+    # print("---------New User---------")
+    # res = session.post("https://core/admin/newuser", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie}, data={
+    #                    "username": username_new_user, "is_admin": "false", "password": "iamTheKingOfTheWorld", "lastname": "Soron", "firstname": "TheGood", "email": "soron@dol_guldur.me"})
+    # print(res.text)
+    # session.cookies.clear()
+    # res = session.post("https://core/admin/newuser", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'),
+    #                    cookies={'userID': cookie}, data={"username": username_new_user, "is_admin": "forSure", "password": "iamTheKingOfTheWorld"})
+    # print(res)
+    # session.cookies.clear()
+    # res = session.post("https://core/admin/newuser", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'),
+    #                    cookies={'userID': cookie}, data={"username": username_new_user, "password": "iamTheKingOfTheWorld"})
+    # print(res)
+    # session.cookies.clear()
 
     print("---------Account---------")
     res = session.get("https://core/account", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
@@ -58,7 +58,7 @@ def main():
 
     print("---------Create certificate---------")
     res = session.post("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie}, data={})
-    #print(res.text)
+    print(res.text)
     session.cookies.clear()
     # print("--------------Check if it has valid cert--------------")
     # res = session.get("https://core/account", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})

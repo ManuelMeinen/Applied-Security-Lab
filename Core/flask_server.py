@@ -169,10 +169,13 @@ def manage_certificate():
                 return "A valid cert already exists", 400
             [private_key, csr] = create_CSR(username)
             res = session.post("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'csr': csr})
-            if add_certificate(username, res.text) != 200:
-                res.session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': res.text})
+            if(res.status_code != 200):
                 return "Error was not added", 500
-            pkcs12 = create_pkcs12(username, private_key, res.text)
+            crt = "-----BEGIN CERTIFICATE-----" + urlsafe_b64decode(res.text.encode()).decode().split("-----BEGIN CERTIFICATE-----")[1]
+            if add_certificate(username, crt) != 200:
+                res = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': res.text})
+                return "Error was not added", 500
+            pkcs12 = create_pkcs12(username, private_key, crt)
             # f = open("/home/ubuntu/example.p12", "rb")
             # p12 = f.read()
             # f.close()
@@ -316,8 +319,7 @@ def create_CSR(username):
     return [key, urlsafe_b64encode(csr.public_bytes(serialization.Encoding.PEM)).decode('utf-8')]
 
 def create_pkcs12(username, key, crt):
-    raw_cert = urlsafe_b64decode(crt.encode('utf-8'))
-    cert = x509.load_pem_x509_certificate(raw_cert)
+    cert = x509.load_pem_x509_certificate(crt.encode())
     pem_pkcs12 = urlsafe_b64encode(serialize_key_and_certificates(name=username.encode('utf-8'), key=key, cert=cert, cas=None, encryption_algorithm=serialization.NoEncryption())).decode('utf-8')
     return pem_pkcs12
 
