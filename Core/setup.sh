@@ -1,28 +1,22 @@
 #!/bin/bash
 echo "Setup environment"
-ifconfig enp0s3 10.0.20.10 netmask 255.255.255.0 up
-ifconfig enp0s8 10.0.10.10 netmask 255.255.255.0 up
-ip route add 192.168.1.0/24 via 10.0.10.40
-ip route add 192.168.1.30/32 via 10.0.20.40
-
-# Install dependencies
-# sh /media/asl/Core/installation.sh
+echo "Setup network"
 
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.4.4" > /etc/resolv.conf
+# Install dependencies
+echo "Install depedencies"
+sh /media/asl/Core/installation.sh
+
 
 cp /media/asl/Core/flask_client.py /home/ubuntu
 cp /media/asl/Core/flask_client2.py /home/ubuntu
+cp /media/asl/Core/flask_client3.py /home/ubuntu
 
 echo "10.0.20.20    ca_server" >> /etc/hosts
+echo "10.0.20.30    mysql" >> /etc/hosts
 echo "127.0.0.1   core" >> /etc/hosts
 
-#Allow SFTP connetions to Backup Server
-iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
-iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
-
-#Allow http connetions to Web Server
-iptables -A INPUT -i enp0s3 -s 192.168.1.20 -p tcp --dport 443 -j ACCEPT
-iptables -A OUTPUT -d 192.168.1.20 -p tcp --sport 443 -j ACCEPT
 
 # Adding a backup_user
 userdel -r backup_user
@@ -52,4 +46,10 @@ cp /media/asl/Core/core_key.pem /etc/Flask/private/core_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
 cp /media/asl/Core/flask_server.py /var/www/core
 
-python3 /var/www/core/flask_server.py > /var/log/Flask.log 2>&1 
+echo "Setup startup"
+cp /media/asl/Core/startup.service /etc/systemd/system
+mkdir /etc/startup
+cp /media/asl/Core/startup /etc/startup
+chmod +x /etc/setup/startup
+service startup start
+systemctl enable startup

@@ -65,7 +65,7 @@ def get_info():
     else:
         user_is_admin = 'false'
     
-    json_response = '{"lastname":"'+user_info_list[0]+'", "firstname":"'+user_info_list[1]+'", "mail":"'+user_info_list[2]+'", "is_admin":'+user_is_admin+'}'
+    json_response = '{"lastname":"'+user_info_list[0]+'", "firstname":"'+user_info_list[1]+'", "mail":"'+user_info_list[2]+'", "is_admin":"' + user_is_admin + '"}'
 
     return json_response
 
@@ -199,7 +199,7 @@ def add_certificate():
     certificate = ''
     if 'certificate' in data:
         certificate=data['certificate']
-
+    print(certificate)
     added_row = sql_server.add_certificate(uid, certificate)
 
     if added_row is None:
@@ -276,7 +276,7 @@ def get_all_certs():
     string_certs = '['
     for c in certs:
         string_certs = string_certs + '"'+ c+ '"'+','
-    string_certs = string_certs[:-1]
+    string_certs = string_certs[:-1] if string_certs[-1] == ',' else string_certs
     string_certs = string_certs + ']'
 
     print("STRING CERTS", string_certs)

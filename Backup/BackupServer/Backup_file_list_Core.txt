@@ -1,1 +1,5 @@
-/home/ubuntu/coucou
+/var/log/Flask.log
+/etc/Flask/private
+/etc/Flask/certs
+/var/log/auth.log
+/var/log/syslog
