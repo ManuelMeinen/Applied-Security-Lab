@@ -1,0 +1,7 @@
+[Unit]
+Description=Setup Startup
+[Service]
+ExecStart=/etc/startup/startup
+Restart=no
+[Install]
+WantedBy=multi-user.target

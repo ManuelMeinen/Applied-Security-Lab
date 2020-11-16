@@ -15,33 +15,17 @@ touch /etc/ssl/CA/index.txt.attr
 cp /media/asl/CA/openssl.cnf /etc/ssl/
 cp /media/asl/CA/cakey.pem /etc/ssl/CA/private
 cp /media/asl/CA/cacert.pem /etc/ssl/CA
-cp /media/asl/CA/cacert.pem /etc/Flask/certs/
 cp /media/asl/CA/.rnd /home/ubuntu
 echo "01" > /etc/ssl/CA/serial
 echo "01" > /etc/ssl/CA/crlnumber
 openssl ca -gencrl -out /etc/ssl/CA/crl/crl.pem -passin pass:ubuntu
 cat /etc/ssl/CA/cacert.pem  /etc/ssl/CA/crl/crl.pem > /home/ubuntu/revoked.pem
 
-# Networking
-ifconfig enp0s3 10.0.20.20 netmask 255.255.255.0 up
-ip route add 192.168.1.0/24 via 10.0.20.40
+
 echo "10.0.20.10    core" >> /etc/hosts
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
-# Internal Firewall
-iptables -F
-iptables -P INPUT DROP
-iptables -P OUTPUT DROP
-iptables -P FORWARD DROP
-iptables -A INPUT -i enp0s10 -j ACCEPT
-iptables -A OUTPUT -o enp0s10 -j ACCEPT
-iptables -A INPUT -i enp0s3 -s 192.168.1.30 -p tcp --dport 22 -j ACCEPT
-iptables -A OUTPUT -d 192.168.1.30 -p tcp --sport 22 -j ACCEPT
-iptables -A INPUT -i enp0s3 -s 10.0.20.10 -p tcp --dport 443 -j ACCEPT
-iptables -A OUTPUT -d 10.0.20.10 -o enp0s3 -p tcp --sport 443 -j ACCEPT
-#Allow SFTP connetions to Backup Server
-iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
-iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
+
 
 # Adding a backup_user
 userdel -r backup_user
@@ -69,17 +53,14 @@ mkdir /etc/Flask/certs
 
 cp /media/asl/CA/ca_server_cert.pem /etc/Flask/certs/ca_cert.pem
 cp /media/asl/CA/ca_server_key.pem /etc/Flask/private/ca_key.pem
+cp /media/asl/CA/ca_server_key.pem /etc/Flask/private/ca_key.pem
+cp /media/asl/CA/cacert.pem /etc/Flask/certs/
 cp /media/asl/CA/flask_server.py /var/www/ca
-python3 /var/www/ca/flask_server.py > /var/log/Flask.log 2>&1 
-# virtualenv /var/www/ca/.env
 
-# Configure nginx
-# touch /tmp/ca.sock
-# chown www-data /tmp/ca.sock
-# cp /media/asl/CA/default /etc/nginx/sites-available
-# ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-# cp /media/asl/CA/ca.ini /etc/uwsgi/apps-available/ca.ini
-# ln -s /etc/uwsgi/apps-available/ca.ini /etc/uwsgi/apps-enabled/ca.ini
-# service nginx restart
-# service uwsgi restart
-
+echo "Setup startup"
+cp /media/asl/CA/startup.service /etc/systemd/system
+mkdir /etc/startup
+cp /media/asl/CA/startup /etc/startup
+chmod +x /etc/setup/startup
+service startup start
+systemctl enable startup
