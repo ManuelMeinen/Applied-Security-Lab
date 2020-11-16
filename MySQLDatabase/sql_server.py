@@ -239,7 +239,7 @@ def get_uid_from_cert(certificate):
     
 
         cursor = connection.cursor()
-        sql_select_query = "select uid from certificates where certificate = %s "
+        sql_select_query = "select uid from certificates where certificate = %s and revoked = 0"
         input_data = (certificate, )
         cursor.execute(sql_select_query, input_data)
         record = cursor.fetchone()

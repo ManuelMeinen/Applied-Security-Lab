@@ -65,7 +65,7 @@ def get_info():
     else:
         user_is_admin = 'false'
     
-    json_response = '{"lastname":"'+user_info_list[0]+'", "firstname":"'+user_info_list[1]+'", "mail":"'+user_info_list[2]+'"}'
+    json_response = '{"lastname":"'+user_info_list[0]+'", "firstname":"'+user_info_list[1]+'", "mail":"'+user_info_list[2]+'", "is_admin":"' + user_is_admin + '"}'
 
     return json_response
 

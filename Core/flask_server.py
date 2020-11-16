@@ -77,44 +77,6 @@ def admin():
     else:
         return "Authentication Failed", 403
 
-
-# @core_server.route("/admin/newuser", methods=["POST"])
-# def add_new_user():
-#     check, username = check_cookie(request)
-#     if check and check_is_admin(username):
-#         username = request.form["username"]
-#         # idx, _ = find_user(username)
-#         # if idx != None:
-#         #     return "User exists already", 400
-#         password = request.form["password"]
-#         is_admin = request.form["is_admin"]
-#         email = request.form["email"]
-#         firstname = request.form["firstname"]
-#         lastname = request.form["lastname"]
-#         if not (is_admin == "true" or is_admin == "false"):
-#             return "is_admin must be 'true' or 'false'", 400
-#         user = {"uid": username, "pwd": hash_password(password), "is_admin": is_admin, "mail": email, "firstname": firstname, "lastname": lastname}
-#         # response = {
-#         #     "username": username,
-#         #     "lastname": lastname,
-#         #     "firstname": firstname,
-#         #     "email": email,
-#         #     "is_admin": is_admin
-#         # }
-#         res = session.post("https://mysql/add_user", data=json.dumps(user), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
-#         # users.append(user)
-#         payload = json.loads(res.content)
-#         response = {
-#             "username": username,
-#             "lastname": payload["lastname"],
-#             "firstname": payload["firstname"],
-#             "email": payload["mail"],
-#             "is_admin": payload["is_admin"]
-#         }
-#         return json.dumps(response)
-#     return "Authentication Failed", 403
-
-
 @core_server.route("/account", methods=["GET", "POST"])
 def get_account_info():
     # global users
@@ -126,21 +88,19 @@ def get_account_info():
             return "User not known", 404
         res = json.loads(res.content)
         if request.method == "POST":
-            # idx, user = find_user(username)
             user = {}
             user["uid"] = username
             user["lastname"] = request.form.get("lastname") if request.form.get("lastname") != None else res["lastname"]
             user["firstname"] = request.form.get("firstname") if request.form.get("firstname") != None else res["firstname"]
             user["mail"] = request.form.get("email") if request.form.get("email") != None else res["mail"]
             # Add possibility to modify password
-            # user["pwd"] = hash_password(request.form.get("password")) if request.form.get("password") != None else res["pwd"]
+            user["pwd"] = hash_password(request.form.get("password")) if request.form.get("password") != None else res["pwd"]
             res = session.post("https://mysql/update", data=json.dumps(user), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
             if res.status_code == 404 or res.status_code == 400:
                 return "User not known", 404
             if res.status_code == 520:
                 return "Internal Error: User not updated", 500
             res = json.loads(res.content)
-        #idx, user = find_user(username)
         response = {
             "username": username,
             "lastname": res["lastname"],
@@ -179,14 +139,9 @@ def manage_certificate():
                 return "Error was not added", 500
             pkcs12 = create_pkcs12(username, private_key, crt)
             save_private_key(username, private_key)
-            # f = open("/home/ubuntu/example.p12", "rb")
-            # p12 = f.read()
-            # f.close()
-            #p12 = urlsafe_b64encode(p12).decode()
             return pkcs12
         elif request.method == "DELETE":
             cert = has_valid_certificate(username)
-            # idx, user = find_user(username)
             if cert != 0:
                 res1 = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': cert})
                 if res1.status_code != 200:
@@ -196,10 +151,6 @@ def manage_certificate():
                 if res2.status_code != 200:
                     return "Certificate not revoked", 500
                 return "Success"
-                # for idx2, tmpCert in enumerate(user["certificates"]):
-                #     if tmpCert["crt"] == cert:
-                #         users[idx]["certificates"][idx2]["revoked"] = "true"
-                # return "Success"
             else:
                 return "No valid certificate to revoke", 400
     return "Authentication Failed", 403
@@ -234,10 +185,12 @@ def check_cookie(request):
     return True, username
 
 def check_is_admin(username):
-    for user in users:
-        if user["username"] == username and user["is_admin"] == "true":
-            return True
-    return False
+    username_json = {"uid": username}
+    res = session.post("https://mysql/get_info", data=json.dumps(username_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    if res.status_code == 404 or res.status_code == 400:
+        return False
+    is_admin = json.loads(res.content)["is_admin"]
+    return is_admin == 'true'
 
 def check_connected_with_cert(request):
     cookie = request.cookies.get("userID")
@@ -256,33 +209,20 @@ def check_user_credential(username, password, certificate):
             storedPwd = json.loads(res.content)['pwd']
             if password == storedPwd:
                 return username
-        # for user in users:
-        #     if user["username"] == username and user["password"] == password:
-        #         return username
         return None
 
 def find_username_by_cert(cert):
-    for user in users:
-        for tmpCert in user["certificates"]:
-            if tmpCert["crt"] == cert and tmpCert["revoked"] == "false":
-                return user["username"]
-    return None        
-
-def find_user(username):
-    for idx, user in enumerate(users):
-        if user["username"] == username:
-            return idx, user
-    return None, None
+    json_id = '{"certificate": "'+ urlsafe_b64encode(cert.encode()).decode() +'"}'
+    res = session.post("https://mysql/who_has_this_cert", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    if res.status_code == 404 or res.status_code == 400:
+        return None
+    username = json.loads(res.content)["uid"]
+    return username        
 
 def statistics_certificates():
-    # issuedCert = 0
-    # revokedCert = 0
-    # for user in users:
-    #     for cert in user["certificates"]:
-    #         issuedCert += 1
-    #         if cert["revoked"] == "true":
-    #             revokedCert += 1
-    return 2, 2
+    res = session.post("https://mysql/certs_stats", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = json.loads(res.content.decode())
+    return res["number_certificates"], res["number_revoked"]
 
 def has_valid_certificate(username):
     request_json = {"uid": username}
@@ -294,9 +234,6 @@ def has_valid_certificate(username):
     return res["certificates"][0]
 
 def add_certificate(username, crt):
-    # idx, user = find_user(username)
-    # user["certificates"].append({"crt": crt, "revoked": "false"})
-    # users[idx] = user
     request_json = {"uid": username, "certificate": crt}
     res = session.post("https://mysql/add_user_certificate", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     return res.status_code
