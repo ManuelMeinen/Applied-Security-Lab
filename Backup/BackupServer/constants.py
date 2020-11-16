@@ -54,5 +54,6 @@ HOME_PATH = "/home/ubuntu/"
 TMP_DIR_PATH = "/home/ubuntu/tmp"
 TMP_DIR_PATH_2 = "/home/ubuntu/tmp_2"
 LETTERBOX_TAG = "letterbox_"
+CODE_BASE_DIR = "/home/ubuntu/BackupServer/"
 
 NO_OF_BACKUP_VERSIONS = 10

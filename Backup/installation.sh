@@ -5,31 +5,45 @@ echo "Installation script started"
 cp /media/asl/Backup/backup_sftp_key /home/ubuntu/.ssh/
 cp /media/asl/Backup/backup_sftp_key.pub /home/ubuntu/.ssh/
 cp /media/asl/Backup/known_hosts /home/ubuntu/.ssh/
-chmod 755 /home/ubuntu/.ssh/backup_sftp_key
+chmod 700 /home/ubuntu/.ssh/backup_sftp_key #Private key only readable by root
 
 # Install pysftp and python3
 apt-get update
 apt-get upgrade -y
-apt-get -y install python3 python3-pip zip cron
+apt-get -y install python3 python3-pip zip cron ifupdown
 python3 -m pip install pysftp
 
-# Setup backup directories
+# Permanently configure networking stuff
+cp /media/asl/Backup/net_setup /etc/network/if-up.d/
+chmod +x /etc/network/if-up.d/net_setup
+/etc/network/if-up.d/net_setup
+
+# Setup backup directories (only root can read the backups)
 mkdir ~/backup_MySQLDatabase
-chmod 777 ~/backup_MySQLDatabase
+chmod 711 ~/backup_MySQLDatabase
 mkdir ~/backup_Core
-chmod 777 ~/backup_Core
+chmod 711 ~/backup_Core
 mkdir ~/backup_CA
-chmod 777 ~/backup_CA
+chmod 711 ~/backup_CA
 mkdir ~/backup_Firewall
-chmod 777 ~/backup_Firewall
+chmod 711 ~/backup_Firewall
 mkdir ~/backup_WebServer
-chmod 777 ~/backup_WebServer
+chmod 711 ~/backup_WebServer
 mkdir ~/backup_VPN
-chmod 777 ~/backup_VPN
+chmod 711 ~/backup_VPN
 
 # Copy the BackupServer Codebase
 mkdir ~/BackupServer
 cp /media/asl/Backup/BackupServer/* ~/BackupServer
-chown ubuntu:ubuntu ~/BackupServer/*
+chown root:root ~/BackupServer/*
+# Change permissions in code base (only root can add files to be backed up)
+chmod 600 ~/BackupServer/Backup_file_list_CA.txt
+chmod 600 ~/BackupServer/Backup_file_list_Core.txt
+chmod 600 ~/BackupServer/Backup_file_list_Firewall.txt
+chmod 600 ~/BackupServer/Backup_file_list_MySQLDatabase.txt
+chmod 600 ~/BackupServer/Backup_file_list_VPN.txt
+chmod 600 ~/BackupServer/Backup_file_list_WebServer.txt
+
+
 # Run backup every hour (as root --> run sudo crontab -l to list the job)
 echo "0 * * * * /home/ubuntu/BackupServer/server >> /home/ubuntu/BackupServer/backup_log.txt" | crontab -

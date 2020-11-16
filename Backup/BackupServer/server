@@ -25,7 +25,7 @@ def runBackup():
                 print(indent+"Host "+name+" is offline!")
                 print(indent+"Host "+name+" was not backed up!")
                 continue
-            with open(constants.BACKUP_FILE_LIST[name], "r") as f:
+            with open(constants.CODE_BASE_DIR+constants.BACKUP_FILE_LIST[name], "r") as f:
                 print(indent+'Backing up files and directories...', end=' ', flush=True)
                 for line in f.readlines():
                     # Backup a file or directory
