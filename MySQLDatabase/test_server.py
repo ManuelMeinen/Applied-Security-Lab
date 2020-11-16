@@ -116,7 +116,3 @@ if __name__ == '__main__':
     addr_stats = 'https://mysql/certs_stats'
     response_stats = session.post(addr_stats, cert=('/etc/Flask/certs/mysql_cert.pem', '/etc/Flask/private/mysql_key.pem'))
     print(json.loads(response_stats.content.decode('utf-8')))
-
-
-
-

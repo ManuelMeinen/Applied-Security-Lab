@@ -7,9 +7,11 @@ ip route add 192.168.1.0/24 via 10.0.20.40
 echo "10.0.20.10    core" >> /etc/hosts
 echo "10.0.20.30    mysql" >> /etc/hosts
 
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 #install mysql
 echo "INSTALLATION OF MYSQL"
-#sh /media/asl/MySQLDatabase/installation.sh
+sh /media/asl/MySQLDatabase/installation.sh
 echo "time to install mysql package"
 
 #copy files for mysql
@@ -46,7 +48,8 @@ adduser "$username" sudo
 mkdir "backup_dir"
 chown "backup_user" "backup_dir"
 chmod 0703 "backup_dir"
-SFTP keys for login without password
+
+# SFTP keys for login without password
 mkdir /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh
 cp /media/asl/MySQLDatabase/authorized_keys /home/backup_user/.ssh

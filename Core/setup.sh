@@ -5,15 +5,18 @@ ifconfig enp0s8 10.0.10.10 netmask 255.255.255.0 up
 ip route add 192.168.1.0/24 via 10.0.10.40
 ip route add 192.168.1.30/32 via 10.0.20.40
 
-# Install dependencies
-# sh /media/asl/Core/installation.sh
-
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 8.8.4.4" > /etc/resolv.conf
+# Install dependencies
+sh /media/asl/Core/installation.sh
+
 
 cp /media/asl/Core/flask_client.py /home/ubuntu
 cp /media/asl/Core/flask_client2.py /home/ubuntu
+cp /media/asl/Core/flask_client3.py /home/ubuntu
 
 echo "10.0.20.20    ca_server" >> /etc/hosts
+echo "10.0.20.30    mysql" >> /etc/hosts
 echo "127.0.0.1   core" >> /etc/hosts
 
 #Allow SFTP connetions to Backup Server

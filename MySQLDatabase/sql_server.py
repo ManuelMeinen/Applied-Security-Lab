@@ -19,10 +19,18 @@ def get_user_info(user_id):
                                             password=password)
     
         cursor = connection.cursor()
+
         sql_select_query = "select lastname, firstname, email from users where users.uid = %s "
         input_data = (user_id, )
         cursor.execute(sql_select_query, input_data)
+
         record = cursor.fetchone()
+
+        # cursor = connection.cursor()
+        # sql_select_query = "select lastname, firstname, email, is_admin from users where users.uid = '"+user_id+"'"
+
+        # cursor.execute(sql_select_query)
+        # record = cursor.fetchone()
 
     except Error as e:
         print("Error while connecting to MySQL", e)
@@ -103,6 +111,18 @@ def update_user_data(user_id, lastname, firstname, mail, pwd, is_admin):
         cursor.execute(sql_update_query, input_data)
         connection.commit()
 
+        sql_select_query = "select lastname, firstname, email from users where users.uid = %s"
+        input_data = (user_id,)
+        cursor.execute(sql_select_query, input_data)
+        record1 = cursor.fetchone()
+
+        sql_select_query = "select is_admin from admin where admin.uid = %s"
+        input_data = (user_id,)
+        cursor.execute(sql_select_query, input_data)
+        record2 = cursor.fetchone()
+
+        record = (record1[0], record1[1], record1[2], record2[0])
+
     except Error as e:
         print("Error while connecting to MySQL", e)
 
@@ -112,7 +132,6 @@ def update_user_data(user_id, lastname, firstname, mail, pwd, is_admin):
             connection.close()
     
     return record
-
 
 def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
     record =None
@@ -191,11 +210,11 @@ def delete_certificate(certificate):
         cursor.execute(sql_delete_user_query, input_data)
         connection.commit()
 
-        sql_select_query = "select * from certificates where certificate = %s "
+        sql_select_query = "select * from certificates where certificate = %s and revoked = 1"
         input_data = (certificate, )
         cursor.execute(sql_select_query, input_data)
         records = cursor.fetchall()
-        if len(records) == 0:
+        if len(records) != 0:
             deleted=True
 
 
@@ -220,7 +239,7 @@ def get_uid_from_cert(certificate):
     
 
         cursor = connection.cursor()
-        sql_select_query = "select uid from certificates where certificate = %s "
+        sql_select_query = "select uid from certificates where certificate = %s and revoked = 0"
         input_data = (certificate, )
         cursor.execute(sql_select_query, input_data)
         record = cursor.fetchone()
