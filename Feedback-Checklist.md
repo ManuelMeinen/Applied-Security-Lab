@@ -25,10 +25,10 @@ System Characterization/Overview (see also General comments above!):
   explanation of Fig 1)
 - [ ] how does web server communicate with core server (TLS?)
 - [ ] unclear why different authentication leads to different revocation behavior
-- [ ] unclear whether backup server connects to DB server (1.2.5) via SFTP or 
+- [x] unclear whether backup server connects to DB server (1.2.5) via SFTP or 
   vice versa (1.2.6)
-- [ ] Sect 1.2.6: are certificates also backed up?
-- [ ] Sect 1.2.7: description of external FW missing
+- [x] Sect 1.2.6: are certificates also backed up?
+- [x] Sect 1.2.7: description of external FW missing
 - [ ] Can a certificate only be downloaded once? (upon generation)
 
 Security Design (see also General comments above!)
