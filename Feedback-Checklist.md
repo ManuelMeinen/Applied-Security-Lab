@@ -37,9 +37,9 @@ Security Design (see also General comments above!)
   private keys or other data. Do some of these services have to run as 
   root? Could this lead to new risks? 
 - [ ] 1.3.5: unclear what "only admin can change data from the servers" means
-- [ ] backup: unclear whether encrypted or authenticated 
+- [x] backup: unclear whether encrypted or authenticated 
 - [ ] missing: session management (cookies? other?)
-- [ ] missing: security of data at rest
+- [ ] missing: security of data at rest (added for Backups but still missing for DB Server)
 - [ ] missing: any protection against common web app vulnerabilities?
   (CSRF, XSS, SQL injection, etc.)
 
