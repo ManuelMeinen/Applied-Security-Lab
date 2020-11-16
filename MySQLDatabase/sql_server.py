@@ -210,11 +210,11 @@ def delete_certificate(certificate):
         cursor.execute(sql_delete_user_query, input_data)
         connection.commit()
 
-        sql_select_query = "select * from certificates where certificate = %s "
+        sql_select_query = "select * from certificates where certificate = %s and revoked = 1"
         input_data = (certificate, )
         cursor.execute(sql_select_query, input_data)
         records = cursor.fetchall()
-        if len(records) == 0:
+        if len(records) != 0:
             deleted=True
 
 

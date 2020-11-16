@@ -68,10 +68,18 @@ def main():
     future_cert = res.text
     print(future_cert)
     session.cookies.clear()
-    # print("--------------Revoke Cert--------------")
-    # res = session.delete("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
-    # print(res.text)
-    # session.cookies.clear()
+    print("--------------Revoke Cert--------------")
+    res = session.delete("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
+    print(res.text)
+    session.cookies.clear()
+    print("--------------Revoke Cert--------------")
+    res = session.delete("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
+    print(res.text)
+    session.cookies.clear()
+    print("---------Account---------")
+    res = session.get("https://core/account", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
+    print(res.text)
+    session.cookies.clear()
 
 
 
