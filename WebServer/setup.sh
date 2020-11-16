@@ -27,26 +27,39 @@ chmod 755 /home/backup_user/.ssh
 cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
-# Install stuff...
-apt update 
-apt upgrade -y
-tasksel install lamp-server
-apt install php libapache2-mod-php
+#Install necessary software and library
+# apt update 
+# apt upgrade -y
+# apt install python3-pip -y
+# pip3 install requests Flask
+# pip3 install Flask-WTF
+# pip3 install email_validator
 
-cp /media/asl/WebServer/000-default.conf /etc/apache2/sites-available/000-default.conf
-cp /media/asl/WebServer/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+#Allow http request to Core Server
+iptables -A OUTPUT -d 10.0.10.10 -p tcp --sport 443 -j ACCEPT
+iptables -A INPUT -i enp0s3 -s 10.0.10.10 -p tcp --dport 433 -j ACCEPT
+
+#Copy webpages, scripts and configuration files
 cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
-cp /media/asl/WebServer/webserver_key.key /etc/ssl/private/webserver_key.key
+cp /media/asl/WebServer/webserver_key.pem /etc/ssl/private/webserver_key.pem
+cp /media/asl/Core/core_cert.pem /etc/ssl/certs/core_cert.pem
 
-cp /media/asl/WebServer/index.php /var/www/html/index.php
-cp /media/asl/WebServer/login.php /var/www/html/login.php
-cp /media/asl/WebServer/logout.php /var/www/html/logout.php
+mkdir /var/www/webserver/
+cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
 
-a2enmod ssl
-a2enmod php7.2
-a2ensite 000-default.conf
-a2ensite default-ssl.conf
-systemctl restart apache2.service
+mkdir /var/www/webserver/templates
+cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
+cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
+cp /media/asl/WebServer/templates/cert_issuance_show_info.html /var/www/webserver/templates/cert_issuance_show_info.html
+cp /media/asl/WebServer/templates/cert_issuance_download_cert.html /var/www/webserver/templates/cert_issuance_download_cert.html
+
+#Run server
+python3 /var/www/webserver/webserver_flask.py
+
+
+
+
+
 
 # TODO:
 # - configure files access right

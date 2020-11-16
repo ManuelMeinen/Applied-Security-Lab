@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>Certificate issuance</title>
+  </head>
+  <body>
+    <h2>Certificate issuance</h2>
+    <p>Please update your information if needed.</p>
+    <form action="https://webserver/cert_issuance/issue" method="post">
+        <div>
+            {{ form.lastname.label() }}
+            {{ form.lastname(value=lastname) }}
+        </div>
+        <div>
+            {{ form.firstname.label()  }}
+            {{ form.firstname(value=firstname)  }}
+        </div>
+        <div>
+            {{ form.email.label()  }}
+            {{ form.email(value=email)  }}
+        </div>
+        <div>
+            {{ form.submit  }}
+        </div>
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning" role="alert">
+                {{message}}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% block body %}{% endblock %}
+  </body>
+</html>

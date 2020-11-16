@@ -1,6 +1,13 @@
 import mysql.connector
-
 from mysql.connector import Error
+
+
+
+password = ''
+with open('/var/www/mysql/database_password.txt', 'r') as f:
+    password = f.read().rstrip('\n')
+    f.close()
+
 
 
 def get_user_info(user_id):
@@ -9,11 +16,14 @@ def get_user_info(user_id):
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
         cursor = connection.cursor()
-        sql_select_query = """select lastname, firstname, email from users where users.uid = %s"""
-        cursor.execute(sql_select_query,(user_id,))
+
+        sql_select_query = "select lastname, firstname, email from users where users.uid = %s "
+        input_data = (user_id, )
+        cursor.execute(sql_select_query, input_data)
+
         record = cursor.fetchone()
 
         # cursor = connection.cursor()
@@ -37,12 +47,12 @@ def get_admin_info(user_id):
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
 
         cursor = connection.cursor()
-        sql_select_query = "select is_admin from admin where admin.uid = '"+user_id+"'"
-
-        cursor.execute(sql_select_query)
+        sql_select_query = "select is_admin from admin where admin.uid = %s "
+        input_data = (user_id, )
+        cursor.execute(sql_select_query, input_data)
         record = cursor.fetchone()
     except Error as e:
         print("Error while connecting to MySQL", e)
@@ -56,17 +66,18 @@ def get_admin_info(user_id):
 
 def get_password(user_id):
     record =None
+
     try:
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
-        sql_select_query = "select pwd from users where users.uid = '"+user_id+"'"
-
-        cursor.execute(sql_select_query)
+        sql_select_query = "select pwd from users where uid = %s "
+        input_data = (user_id, )
+        cursor.execute(sql_select_query, input_data)
         record = cursor.fetchone()
 
         print(record)
@@ -80,18 +91,18 @@ def get_password(user_id):
             connection.close()
     return record
 
-def update_user_data(user_id, lastname, firstname, mail, password, is_admin):
+def update_user_data(user_id, lastname, firstname, mail, pwd, is_admin):
     record =None
     try:
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
         sql_update_query = "update users set lastname= %s , firstname= %s , email= %s , pwd= %s where uid= %s "
-        input_data = (lastname, firstname, mail, password, user_id)
+        input_data = (lastname, firstname, mail, pwd, user_id)
         cursor.execute(sql_update_query, input_data)
         connection.commit()
 
@@ -128,7 +139,7 @@ def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
@@ -151,7 +162,6 @@ def add_user(user_id, lastname, firstname, mail, pwd, is_admin):
             cursor.close()
             connection.close()
 
-    #TODO return ok
     return 0
 
 
@@ -161,7 +171,7 @@ def add_certificate(user_id, certificate):
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
@@ -170,8 +180,9 @@ def add_certificate(user_id, certificate):
         cursor.execute(sql_add_user_query, input_data)
         connection.commit()
 
-        sql_select_query = "select * from certificates where certificates.certificate = '"+certificate+"'"
-        cursor.execute(sql_select_query)
+        sql_select_query = "select * from certificates where certificates.certificate = %s "
+        input_data=(certificate, )
+        cursor.execute(sql_select_query, input_data)
         record = cursor.fetchone()
 
     except Error as e:
@@ -190,16 +201,18 @@ def delete_certificate(certificate):
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
-        sql_delete_user_query = "Update certificates set revoked=1 where certificate = '"+certificate+"' "
-        cursor.execute(sql_delete_user_query)
+        sql_delete_user_query = "Update certificates set revoked=1 where certificate = %s "
+        input_data = (certificate, )
+        cursor.execute(sql_delete_user_query, input_data)
         connection.commit()
 
-        sql_select_query = "select * from certificates where certificate = '"+certificate+"' "
-        cursor.execute(sql_select_query)
+        sql_select_query = "select * from certificates where certificate = %s "
+        input_data = (certificate, )
+        cursor.execute(sql_select_query, input_data)
         records = cursor.fetchall()
         if len(records) == 0:
             deleted=True
@@ -222,13 +235,13 @@ def get_uid_from_cert(certificate):
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
-        sql_select_query = "select uid from certificates where certificate = '"+certificate+"'"
-
-        cursor.execute(sql_select_query)
+        sql_select_query = "select uid from certificates where certificate = %s "
+        input_data = (certificate, )
+        cursor.execute(sql_select_query, input_data)
         record = cursor.fetchone()
 
     except Error as e:
@@ -247,13 +260,13 @@ def get_certs(uid):
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
-        sql_select_query = "select certificate from certificates where uid = '"+uid+"'"
-
-        cursor.execute(sql_select_query)
+        sql_select_query = "select certificate from certificates where uid = %s and revoked=0 "
+        input_data = (uid, )
+        cursor.execute(sql_select_query, input_data)
         record = cursor.fetchall()
 
         print(record, type(record))
@@ -274,7 +287,7 @@ def get_stats():
         connection = mysql.connector.connect(host='localhost', 
                                             database='imovies',
                                             user='ubuntu', 
-                                            password='JT:*g,m,p8{-"95')
+                                            password=password)
     
 
         cursor = connection.cursor()
@@ -292,8 +305,4 @@ def get_stats():
             cursor.close()
             connection.close()
     return record
-
-
-
-
 

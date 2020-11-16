@@ -3,6 +3,9 @@ echo "Nothing to be set up..."
 ifconfig enp0s8 192.168.1.10 netmask 255.255.255.0 up
 ip route add 192.168.1.0/24 dev enp0s8
 
+# Add hosts
+echo "192.168.1.20    webserver" >> /etc/hosts
+
 # Create VPN connection with wireguard
 cp /media/asl/Client/wg_private /home/ubuntu/.ssh/
 ip link add wg0 type wireguard

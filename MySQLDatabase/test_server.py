@@ -24,6 +24,7 @@ if __name__ == '__main__':
     
     # GET PASSWORD GIVEN UID
 
+    
     print('\x1b[6;30;42m' + 'GETTING PASSWORD' + '\x1b[0m')
     addr_password = 'https://mysql/password'
     response_pwd = session.post(addr_password, data=json_id, cert=('/etc/Flask/certs/mysql_cert.pem', '/etc/Flask/private/mysql_key.pem'))
@@ -45,7 +46,7 @@ if __name__ == '__main__':
     json_update = '{"uid": "ms", "mail": "ms@imovies.ch", "is_admin": false, "pwd": "newpassword"}'
     addr_update = 'https://mysql/update'
     response_update = session.post(addr_update, data=json_update, cert=('/etc/Flask/certs/mysql_cert.pem', '/etc/Flask/private/mysql_key.pem'))
-    print(json.loads(response_update.content.decode('utf-8')))
+    print(response_update.content.decode('utf-8'))
 
     print("--------------------------------------")
 
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     json_delete_cert = '{"certificate": "1234aouhfdu"}'
     addr_delete_cert = 'https://mysql/revoke_user_certificate'
     response_delete_certificate = session.post(addr_delete_cert, data=json_delete_cert, cert=('/etc/Flask/certs/mysql_cert.pem', '/etc/Flask/private/mysql_key.pem'))
-    print(json.loads(response_delete_certificate.content.decode('utf-8')))
+    print(response_delete_certificate.content.decode('utf-8'))
 
     print("--------------------------------------")
 
@@ -100,7 +101,7 @@ if __name__ == '__main__':
 
     #GET ALL CERTIFICATES OF A USER
     print('\x1b[6;30;42m' + 'GETTING ALL CERTIFIACTES OF A USER' + '\x1b[0m')
-    json_uid = '{"uid": "lb"}'
+    json_uid = '{"uid": "a3"}'
     addr_all_certs = 'https://mysql/all_certs'
     response_all_certs = session.post(addr_all_certs, data=json_uid, cert=('/etc/Flask/certs/mysql_cert.pem', '/etc/Flask/private/mysql_key.pem'))
     print(response_all_certs.content.decode('utf-8'))
