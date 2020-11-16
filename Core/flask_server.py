@@ -172,7 +172,8 @@ def manage_certificate():
             if(res.status_code != 200):
                 return "Error was not added", 500
             crt = "-----BEGIN CERTIFICATE-----" + urlsafe_b64decode(res.text.encode()).decode().split("-----BEGIN CERTIFICATE-----")[1]
-            if add_certificate(username, crt) != 200:
+            crt_db = urlsafe_b64encode(crt.encode()).decode()
+            if add_certificate(username, crt_db) != 200:
                 res = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': res.text})
                 return "Error was not added", 500
             pkcs12 = create_pkcs12(username, private_key, crt)
@@ -275,21 +276,13 @@ def statistics_certificates():
     return 2, 2
 
 def has_valid_certificate(username):
-    # for user in users:
-    #     if user["username"] == username:
-    #         for cert in user["certificates"]:
-    #             if cert["revoked"] == "false":
-    #                 return cert["crt"]
-    # request_json = {"uid": username}
     request_json = {"uid": username}
     res = session.post("https://mysql/all_certs", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
-    res = json.loads(res.content)
+    res = json.loads(res.content.decode())
     if len(res["certificates"])==0:
         return None
     
-    return res["certificates"][0]
-    # return len(res["certificates"])
-    # return None
+    return urlsafe_b64decode((res["certificates"][0]).encode()).decode()
 
 def add_certificate(username, crt):
     # idx, user = find_user(username)
@@ -297,7 +290,6 @@ def add_certificate(username, crt):
     # users[idx] = user
     request_json = {"uid": username, "certificate": crt}
     res = session.post("https://mysql/add_user_certificate", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
-    print(res.text)
     return res.status_code
 
 def hash_password(password):
