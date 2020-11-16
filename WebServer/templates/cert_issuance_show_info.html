@@ -5,7 +5,7 @@
   <body>
     <h2>Certificate issuance</h2>
     <p>Please update your information if needed.</p>
-    <form action="https://webserver/cert_issuance/issue" method="post">
+    <form action="https://webserver/cert_issuance/update_info" method="post">
         <div>
             {{ form.lastname.label() }}
             {{ form.lastname(value=lastname) }}
@@ -19,8 +19,17 @@
             {{ form.email(value=email)  }}
         </div>
         <div>
+            {{ form.password.label()  }}
+            {{ form.password(value=password)  }}
+        </div>
+        <div>
             {{ form.submit  }}
         </div>
+    </form>
+    <form action="https://webserver/cert_issuance/issue" method="get">
+        <div class="form-group">
+            <input type="submit" class="btn" value="Download">
+          </div>
     </form>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
