@@ -9,8 +9,6 @@ echo "Install depedencies"
 sh /media/asl/Core/installation.sh
 
 
-cp /media/asl/Core/flask_client.py /home/ubuntu
-cp /media/asl/Core/flask_client2.py /home/ubuntu
 cp /media/asl/Core/flask_client3.py /home/ubuntu
 
 echo "10.0.20.20    ca_server" >> /etc/hosts
