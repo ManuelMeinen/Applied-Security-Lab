@@ -1,9 +1,21 @@
 <html>
   <head>
-    <title>Download cert</title>
+    <title>CA admin</title>
   </head>
   <body>
-    <h2>Download cert</h2>
+    <h2>CA admin</h2>
+    <div class="container"></div>
+        <div>
+            Serial: {{ serial }}
+        </div>
+        <div>
+            Number of issued certificates: {{ nbre_issued }}
+        </div>
+        <div>
+            Number of revoked certificates: {{ nbre_revoked }}
+        </div>
+    </div>
+    <div class="container">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}

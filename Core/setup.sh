@@ -9,8 +9,6 @@ echo "Install depedencies"
 sh /media/asl/Core/installation.sh
 
 
-cp /media/asl/Core/flask_client.py /home/ubuntu
-cp /media/asl/Core/flask_client2.py /home/ubuntu
 cp /media/asl/Core/flask_client3.py /home/ubuntu
 
 echo "10.0.20.20    ca_server" >> /etc/hosts
@@ -50,6 +48,6 @@ echo "Setup startup"
 cp /media/asl/Core/startup.service /etc/systemd/system
 mkdir /etc/startup
 cp /media/asl/Core/startup /etc/startup
-chmod +x /etc/setup/startup
+chmod +x /etc/startup/startup
 service startup start
 systemctl enable startup

@@ -19,30 +19,30 @@ chmod +x /etc/network/if-up.d/net_setup
 /etc/network/if-up.d/net_setup
 
 # Setup backup directories (only root can read the backups)
-mkdir ~/backup_MySQLDatabase
-chmod 711 ~/backup_MySQLDatabase
-mkdir ~/backup_Core
-chmod 711 ~/backup_Core
-mkdir ~/backup_CA
-chmod 711 ~/backup_CA
-mkdir ~/backup_Firewall
-chmod 711 ~/backup_Firewall
-mkdir ~/backup_WebServer
-chmod 711 ~/backup_WebServer
-mkdir ~/backup_VPN
-chmod 711 ~/backup_VPN
+mkdir /home/ubuntu/backup_MySQLDatabase
+chmod 711 /home/ubuntu/backup_MySQLDatabase
+mkdir /home/ubuntu/backup_Core
+chmod 711 /home/ubuntu/backup_Core
+mkdir /home/ubuntu/backup_CA
+chmod 711 /home/ubuntu/backup_CA
+mkdir /home/ubuntu/backup_Firewall
+chmod 711 /home/ubuntu/backup_Firewall
+mkdir /home/ubuntu/backup_WebServer
+chmod 711 /home/ubuntu/backup_WebServer
+mkdir /home/ubuntu/backup_VPN
+chmod 711 /home/ubuntu/backup_VPN
 
 # Copy the BackupServer Codebase
-mkdir ~/BackupServer
-cp /media/asl/Backup/BackupServer/* ~/BackupServer
-chown root:root ~/BackupServer/*
+mkdir /home/ubuntu/BackupServer
+cp /media/asl/Backup/BackupServer/* /home/ubuntu/BackupServer
+chown root:root /home/ubuntu/BackupServer/*
 # Change permissions in code base (only root can add files to be backed up)
-chmod 600 ~/BackupServer/Backup_file_list_CA.txt
-chmod 600 ~/BackupServer/Backup_file_list_Core.txt
-chmod 600 ~/BackupServer/Backup_file_list_Firewall.txt
-chmod 600 ~/BackupServer/Backup_file_list_MySQLDatabase.txt
-chmod 600 ~/BackupServer/Backup_file_list_VPN.txt
-chmod 600 ~/BackupServer/Backup_file_list_WebServer.txt
+chmod 600 /home/ubuntu/BackupServer/Backup_file_list_CA.txt
+chmod 600 /home/ubuntu/BackupServer/Backup_file_list_Core.txt
+chmod 600 /home/ubuntu/BackupServer/Backup_file_list_Firewall.txt
+chmod 600 /home/ubuntu/BackupServer/Backup_file_list_MySQLDatabase.txt
+chmod 600 /home/ubuntu/BackupServer/Backup_file_list_VPN.txt
+chmod 600 /home/ubuntu/BackupServer/Backup_file_list_WebServer.txt
 
 
 # Run backup every hour (as root --> run sudo crontab -l to list the job)

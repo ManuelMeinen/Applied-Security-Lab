@@ -17,6 +17,6 @@ echo "Setup startup"
 cp /media/asl/Client/startup.service /etc/systemd/system
 mkdir /etc/startup
 cp /media/asl/Client/startup /etc/startup
-chmod +x /etc/setup/startup
+chmod +x /etc/startup/startup
 service startup start
 systemctl enable startup
