@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 context=('/etc/ssl/certs/webserver_cert.pem', '/etc/ssl/private/webserver_key.pem')
 app = Flask(__name__)
 session = requests.Session()
+session.verify = cafile
 
 # The cookie name must match the name created by the core server!
 userid = 'userID'
@@ -31,40 +32,42 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def login():
-    # data = {"username": request.form['username'], "password": request.form['password'], "crt": ""}
-    # response = None
-    # try:
-    #     response = session.post("https://core/login", data=data, cert=context)
-    # except requests.exceptions.ConnectionError:
-    #     flash('Connection refused!')
-    #     return home()
+    data = {"username": request.form['username'], "password": request.form['password']}
+    response = None
+    try:
+        response = session.post("https://core/login", cert=('/etc/ssl/certs/webserver_cert.pem',
+                                                   '/etc/ssl/private/webserver_key.pem'), data={'username': "admin", "password": "KK38O!M=HiCC20g9mS_gFgC"})
+        #response = session.post("https://core/login", data=data, cert=context)
+    except requests.exceptions.ConnectionError:
+        flash('Connection refused!')
+        return home()
 
-    # if response != None and response.ok:
-    #     res = make_response(render_template('home.html'))
-    #     res.set_cookie(userid, response.cookies, max_age=60*10)
-    #     return res
-    # else:
-    #     flash('Incorrect credentials!')
-    #     return home()
+    if response != None and response.ok:
+        res = make_response(render_template('home.html'))
+        res.set_cookie(userid, response.cookies, max_age=60*10)
+        return res
+    else:
+        flash('Incorrect credentials!')
+        return home()
 
 
     #
     # Local code
     #
-    if request.form['username'] == 'admin' and request.form['password'] == 'admin':
-        cookie = {
-            "username": request.form['username'],
-            "timestamp": 0,
-            "nonce": 0,
-            "signature": 0
-        }
-        cookie = urlsafe_b64encode(json.dumps(cookie).encode()).decode()
-        res = make_response(render_template('home.html'))
-        res.set_cookie(userid, cookie, max_age=60*10)
-        return res
-    else:
-        flash ('Incorrect credentials!')
-        return home()
+    # if request.form['username'] == 'admin' and request.form['password'] == 'admin':
+    #     cookie = {
+    #         "username": request.form['username'],
+    #         "timestamp": 0,
+    #         "nonce": 0,
+    #         "signature": 0
+    #     }
+    #     cookie = urlsafe_b64encode(json.dumps(cookie).encode()).decode()
+    #     res = make_response(render_template('home.html'))
+    #     res.set_cookie(userid, cookie, max_age=60*10)
+    #     return res
+    # else:
+    #     flash ('Incorrect credentials!')
+    #     return home()
 
 
 @app.route('/login_with_cert', methods=['POST'])
