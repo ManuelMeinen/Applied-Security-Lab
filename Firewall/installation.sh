@@ -1,18 +1,11 @@
 #!/bin/bash
-# Install stuff...
-# apt-get update
-# apt-get upgrade -y
-# apt-get -y install ifupdown
 
 # Permanently configure networking stuff
-# cp /media/asl/Firewall/net_setup /etc/network/if-up.d/
-# chmod +x /etc/network/if-up.d/net_setup
-# /etc/network/if-up.d/net_setup
 echo "Setup startup"
 cp /media/asl/Firewall/startup.service /etc/systemd/system
 mkdir /etc/startup
 cp /media/asl/Firewall/startup /etc/startup
-chmod +x /etc/setup/startup
+chmod +x /etc/startup/startup
 service startup start
 systemctl enable startup
 
