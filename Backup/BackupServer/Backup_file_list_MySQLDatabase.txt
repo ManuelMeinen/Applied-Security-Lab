@@ -1,4 +1,2 @@
-/home/ubuntu/test/*
-/home/ubuntu/coucou
 /var/log/mysql/*
 /var/log/Flask.log
