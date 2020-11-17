@@ -29,6 +29,9 @@ cp /media/asl/MySQLDatabase/mysql_key.pem /etc/Flask/private
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
 sudo mysql -u root < /var/www/mysql/imovies.sql &
 
+cp -f /media/asl/MySQLDatabase/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+
+
 
 
 echo "MYSQL INSTALLED"
