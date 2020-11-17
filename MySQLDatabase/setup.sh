@@ -3,8 +3,9 @@ echo "sqlServer setup"
 
 
 # Add hosts
-echo "10.0.20.10    core" >> /etc/hosts
-echo "10.0.20.30    mysql" >> /etc/hosts
+#echo "10.0.20.10    core" >> /etc/hosts
+#echo "10.0.20.30    mysql" >> /etc/hosts
+cp -f /media/asl/MySQLDatabase/hosts /etc/hosts
 
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
