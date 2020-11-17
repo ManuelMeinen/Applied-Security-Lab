@@ -32,7 +32,7 @@ sudo mysql -u root < /var/www/mysql/imovies.sql &
 
 cp -f /media/asl/MySQLDatabase/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 
-cp /media/asl/MySQLDatabase/imovies.sql /media/asl/MySQLDatabase/backup_dir
+cp /media/asl/MySQLDatabase/imovies.sql /backup_dir
 
 
 
