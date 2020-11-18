@@ -25,6 +25,7 @@ cafile = "/etc/Flask/certs/cacert.pem"
 session = requests.Session()
 session.verify = cafile
 MAX_AGE = 60*10
+pkcs_12_password = "asl"
 
 @core_server.route("/login", methods=["POST"])
 def login():
@@ -256,7 +257,7 @@ def create_CSR(username):
 
 def create_pkcs12(username, key, crt):
     cert = x509.load_pem_x509_certificate(crt.encode())
-    pem_pkcs12 = urlsafe_b64encode(serialize_key_and_certificates(name=username.encode('utf-8'), key=key, cert=cert, cas=None, encryption_algorithm=serialization.NoEncryption())).decode('utf-8')
+    pem_pkcs12 = urlsafe_b64encode(serialize_key_and_certificates(name=username.encode('utf-8'), key=key, cert=cert, cas=None, encryption_algorithm=serialization.BestAvailableEncryption(pkcs_12_password.encode()))).decode('utf-8')
     return pem_pkcs12
 
 def save_private_key(username, key):

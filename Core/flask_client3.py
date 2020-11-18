@@ -38,6 +38,12 @@ def main():
     print("---------Create certificate---------")
     res = session.post("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie}, data={})
     print(res.text)
+    f = open("/home/ubuntu/cert.p12", "wb")
+    p12 = res.text
+    p12 = urlsafe_b64decode(p12.encode())
+    f.write(p12)
+    f.close()
+
     session.cookies.clear()
     print("--------------Check if it has valid cert--------------")
     res = session.get("https://core/account", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
@@ -70,11 +76,11 @@ def main():
     res = session.post("https://core/account", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie}, data={"lastname": "Astrid", "email":"astrid@the_great.me"})
     print(res.text)
     session.cookies.clear()
-
     print("---------Create certificate---------")
     res = session.post("https://core/account/certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie}, data={})
     print(res.text)
     session.cookies.clear()
+
     print("--------------Check if it has valid cert--------------")
     res = session.get("https://core/account", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), cookies={'userID': cookie})
     print(res.text)
