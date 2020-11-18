@@ -98,8 +98,11 @@ class SFTP:
         with pysftp.Connection(host=self.host_ip, username=self.username, private_key =self.key_file) as sftp:
             # Copy full folder hirarchy at remote_dir to local_dir
             with sftp.cd("/"+remote_dir[0:-1]) as cd:
-                cmd = "setfacl -R -m u:backup_user:r "+remote_dir+folder_name+"/"
-                sftp.execute(cmd)
+                cmd = "sudo setfacl -R -m u:backup_user:r "+remote_dir+folder_name+"/"
+                out = sftp.execute(cmd)
+                if len(out)>0:
+                    print("ERROR: setfacl failed!")
+                    print(out)
                 sftp.get_r(remotedir=folder_name, localdir=local_dir)
 
 
@@ -115,7 +118,12 @@ class SFTP:
             localFilePath = local_dir+"/"+file_name
             # Assemble the path from where we get the file on the remote host
             remoteFilePath = remote_dir+file_name
-            sftp.execute("setfacl -m u:backup_user:r "+remoteFilePath)
+            cmd = "sudo setfacl -m u:backup_user:r "+remoteFilePath
+            out = sftp.execute(cmd)
+            if len(out)>0:
+                    print("ERROR: setfacl failed!")
+                    print(cmd)
+                    print(out)
             sftp.get(remotepath=remoteFilePath, localpath=localFilePath)
 
 

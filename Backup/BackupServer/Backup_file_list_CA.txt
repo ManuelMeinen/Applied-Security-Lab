@@ -1,4 +1,4 @@
-/etc/ssl/CA
+/etc/ssl/CA/*
 /etc/ssl/openssl.cnf
 /home/ubuntu/.rnd
 /home/ubuntu/revoked.pem

@@ -14,6 +14,7 @@ pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
 cp /media/asl/VPN/sudoers /etc
+cp /media/asl/VPN/hosts /etc
 
 # Create Backup Directory
 mkdir "/backup_dir"
