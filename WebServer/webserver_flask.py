@@ -1,22 +1,25 @@
 from flask import Flask, send_file, send_from_directory, render_template, request, redirect, session, abort, flash, make_response
-import requests
-import os
 from base64 import urlsafe_b64encode, urlsafe_b64decode
-import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, PasswordField
 from wtforms.widgets import PasswordInput
 from wtforms.validators import DataRequired, Email
 from werkzeug.utils import secure_filename
+import requests
+import os
+import json
+import ssl
 
 
-context=('/etc/ssl/certs/webserver_cert.pem', '/etc/ssl/private/webserver_key.pem')
 app = Flask(__name__)
+corefile = "/etc/ssl/certs/core_cert.pem"
 session = requests.Session()
+session.verify = corefile
 
 # The cookie name must match the name created by the core server!
 userid = 'userID'
 
+# Remove ?
 UPLOAD_FOLDER = '/var/www/webserver/files/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -31,40 +34,40 @@ def home():
 
 @app.route('/login', methods=['POST'])
 def login():
-    # data = {"username": request.form['username'], "password": request.form['password'], "crt": ""}
-    # response = None
-    # try:
-    #     response = session.post("https://core/login", data=data, cert=context)
-    # except requests.exceptions.ConnectionError:
-    #     flash('Connection refused!')
-    #     return home()
+    data = {"username": request.form['username'], "password": request.form['password']}
+    response = None
+    try:
+        response = session.post("https://core/login", data=data, cert=context)
+    except requests.exceptions.ConnectionError:
+        flash('Connection refused!')
+        return home()
 
-    # if response != None and response.ok:
-    #     res = make_response(render_template('home.html'))
-    #     res.set_cookie(userid, response.cookies, max_age=60*10)
-    #     return res
-    # else:
-    #     flash('Incorrect credentials!')
-    #     return home()
+    if response != None and response.ok:
+        res = make_response(render_template('home.html'))
+        res.set_cookie(userid, response.cookies, max_age=60*10)
+        return res
+    else:
+        flash('Incorrect credentials!')
+        return home()
 
 
     #
     # Local code
     #
-    if request.form['username'] == 'admin' and request.form['password'] == 'admin':
-        cookie = {
-            "username": request.form['username'],
-            "timestamp": 0,
-            "nonce": 0,
-            "signature": 0
-        }
-        cookie = urlsafe_b64encode(json.dumps(cookie).encode()).decode()
-        res = make_response(render_template('home.html'))
-        res.set_cookie(userid, cookie, max_age=60*10)
-        return res
-    else:
-        flash ('Incorrect credentials!')
-        return home()
+    # if request.form['username'] == 'admin' and request.form['password'] == 'admin':
+    #     cookie = {
+    #         "username": request.form['username'],
+    #         "timestamp": 0,
+    #         "nonce": 0,
+    #         "signature": 0
+    #     }
+    #     cookie = urlsafe_b64encode(json.dumps(cookie).encode()).decode()
+    #     res = make_response(render_template('home.html'))
+    #     res.set_cookie(userid, cookie, max_age=60*10)
+    #     return res
+    # else:
+    #     flash ('Incorrect credentials!')
+    #     return home()
 
 
 @app.route('/login_with_cert', methods=['POST'])
@@ -282,10 +285,16 @@ def logout():
     return res
 
 if __name__ == "__main__":
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    context.load_cert_chain('/etc/ssl/certs/webserver_cert.pem',
+                            '/etc/ssl/private/webserver_key.pem')
+    context.verify_mode = ssl.CERT_OPTIONAL
+    context.load_verify_locations('/etc/ssl/certs/core_cert.pem')
     app.secret_key = os.urandom(12)
     app.run(
         debug=False,
         host='192.168.1.20',
         port=443,
         ssl_context=context)
+
 

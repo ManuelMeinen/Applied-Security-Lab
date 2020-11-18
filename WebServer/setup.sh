@@ -34,7 +34,6 @@ apt upgrade -y
 apt install python3-pip -y
 pip3 install requests Flask
 pip3 install Flask-WTF
-pip3 install email_validator
 
 #Allow http request to Core Server
 iptables -A OUTPUT -d 10.0.10.10 -p tcp --sport 443 -j ACCEPT
