@@ -53,12 +53,11 @@ cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
 mkdir -p /var/www/webserver/templates
 cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
 cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
-cp /media/asl/WebServer/templates/cert_issuance_show_info.html /var/www/webserver/templates/cert_issuance_show_info.html
+cp /media/asl/WebServer/templates/account.html /var/www/webserver/templates/account.html
 cp /media/asl/WebServer/templates/cert_issuance_download_cert.html /var/www/webserver/templates/cert_issuance_download_cert.html
 cp /media/asl/WebServer/templates/ca_admin.html /var/www/webserver/templates/ca_admin.html
 
 mkdir /var/www/webserver/files
-cp /media/asl/WebServer/certificate_test.pem /var/www/webserver/files/certificate_test.pem
 
 #Run server
 python3 /var/www/webserver/webserver_flask.py
