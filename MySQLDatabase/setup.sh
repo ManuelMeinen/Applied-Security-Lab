@@ -3,8 +3,9 @@ echo "sqlServer setup"
 
 
 # Add hosts
-echo "10.0.20.10    core" >> /etc/hosts
-echo "10.0.20.30    mysql" >> /etc/hosts
+#echo "10.0.20.10    core" >> /etc/hosts
+#echo "10.0.20.30    mysql" >> /etc/hosts
+cp -f /media/asl/MySQLDatabase/hosts /etc/hosts
 
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
@@ -29,6 +30,9 @@ cp /media/asl/MySQLDatabase/mysql_key.pem /etc/Flask/private
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
 sudo mysql -u root < /var/www/mysql/imovies.sql &
 
+cp -f /media/asl/MySQLDatabase/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+
+
 
 
 echo "MYSQL INSTALLED"
@@ -40,11 +44,12 @@ password="ubuntu" #TODO: change the password
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
+cp /media/asl/MySQLDatabase/sudoers /etc
 
 # Create Backup Directory
-mkdir "backup_dir"
-chown "backup_user" "backup_dir"
-chmod 0703 "backup_dir"
+mkdir "/backup_dir"
+chown "backup_user" "/backup_dir"
+chmod 0703 "/backup_dir"
 
 # SFTP keys for login without password
 mkdir /home/backup_user/.ssh
@@ -53,6 +58,7 @@ cp /media/asl/MySQLDatabase/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
 cp /media/asl/MySQLDatabase/test_server.py /home/ubuntu
+cp /media/asl/MySQLDatabase/imovies.sql /backup_dir
 
 echo "Setup startup"
 cp /media/asl/MySQLDatabase/startup.service /etc/systemd/system

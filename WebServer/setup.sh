@@ -18,6 +18,8 @@ password="C?NMuPu77c4sHfa3"
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
+cp /media/asl/WebServer/sudoers /etc
+
 # Create Backup Directory
 mkdir "/backup_dir"
 chown "backup_user" "/backup_dir"
@@ -29,12 +31,11 @@ cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
 #Install necessary software and library
-apt update 
-apt upgrade -y
-apt install python3-pip -y
-pip3 install requests Flask
-pip3 install Flask-WTF
-pip3 install email_validator
+# apt update 
+# apt upgrade -y
+# apt install python3-pip -y
+# pip3 install requests Flask
+# pip3 install Flask-WTF
 
 #Allow http request to Core Server
 iptables -A OUTPUT -d 10.0.10.10 -p tcp --sport 443 -j ACCEPT
@@ -44,6 +45,7 @@ iptables -A INPUT -i enp0s3 -s 10.0.10.10 -p tcp --dport 433 -j ACCEPT
 cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
 cp /media/asl/WebServer/webserver_key.pem /etc/ssl/private/webserver_key.pem
 cp /media/asl/Core/core_cert.pem /etc/ssl/certs/core_cert.pem
+cp /media/asl/CA/cacert.pem /etc/ssl/certs/cacert.pem
 
 mkdir -p /var/www/webserver/
 cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py

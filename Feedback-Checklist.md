@@ -50,7 +50,7 @@ Components:
 Assets:
 - [x] organize into groups: physical, logical, intangible assets (see book)
   (e.g., "web server" appears to refer both to the machine and the service)
-- [ ] do not describe functionality under assets (e.g., for certificates)
+- [x] do not describe functionality under assets (e.g., for certificates)
 - [x] do list security requirements with each asset
   (access restrictions, integrity, confidentiality)
 - [ ] missing: security properties for server keys and certificates? 
