@@ -60,7 +60,7 @@ cp /media/asl/WebServer/templates/ca_admin.html /var/www/webserver/templates/ca_
 mkdir /var/www/webserver/files
 
 #Run server
-python3 /var/www/webserver/webserver_flask.py
+#python3 /var/www/webserver/webserver_flask.py
 
 
 
