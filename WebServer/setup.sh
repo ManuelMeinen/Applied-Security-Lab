@@ -54,13 +54,12 @@ mkdir -p /var/www/webserver/templates
 cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
 cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
 cp /media/asl/WebServer/templates/account.html /var/www/webserver/templates/account.html
-cp /media/asl/WebServer/templates/cert_issuance_download_cert.html /var/www/webserver/templates/cert_issuance_download_cert.html
 cp /media/asl/WebServer/templates/ca_admin.html /var/www/webserver/templates/ca_admin.html
 
 mkdir /var/www/webserver/files
 
 #Run server
-#python3 /var/www/webserver/webserver_flask.py
+python3 /var/www/webserver/webserver_flask.py
 
 
 

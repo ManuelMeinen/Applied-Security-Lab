@@ -104,7 +104,7 @@ def account_certificate():
             username = json.loads(urlsafe_b64decode(request.cookies.get(userid)).decode())['username']
             filename = username + "_certificate.p12"
             f = open(os.path.join(app.config['UPLOAD_FOLDER'], filename), "wb")
-            f.write(response.content)
+            f.write(urlsafe_b64decode(response.content))
             f.close()
             return send_from_directory(directory=app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
         if (response.status_code == 400):
@@ -121,9 +121,16 @@ def account_certificate():
                 return home()
 
 
-@app.route('/account/certificate', methods=['POST'])
-def account_certificate():
-
+@app.route('/account/certificate/revocation', methods=['POST'])
+def account_certificate_revocation():
+    if not request.cookies.get(userid):
+        return render_template('login.html')
+    response = session.delete("https://core/account/certificate", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
+    if response.status_code == 200:
+        return render_template('home.html', msg='Your certificate has been revoked.')
+    else:
+       return render_template('home.html', msg='You do not have a certificate.') 
+    
 
 # TODO: check it works when certificate login is working
 @app.route('/ca_admin', methods=['get'])
