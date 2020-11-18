@@ -61,7 +61,7 @@ mkdir /var/www/webserver/files
 cp /media/asl/WebServer/certificate_test.pem /var/www/webserver/files/certificate_test.pem
 
 #Run server
-python3 /var/www/webserver/webserver_flask.py
+#python3 /var/www/webserver/webserver_flask.py
 
 
 
