@@ -5,7 +5,7 @@
   <body>
     <h2>Certificate issuance</h2>
     <p>Please update your information if needed.</p>
-    <form action="https://webserver/cert_issuance/update_info" method="post">
+    <form action="https://webserver/account" method="post">
         <div>
             {{ form.lastname.label() }}
             {{ form.lastname(value=lastname) }}
@@ -26,21 +26,13 @@
             {{ form.submit  }}
         </div>
     </form>
-    <form action="https://webserver/cert_issuance/issue" method="get">
+    <form action="https://webserver/account/certificate" method="post">
         <div class="form-group">
             <input type="submit" class="btn" value="Download">
           </div>
     </form>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-warning" role="alert">
-                {{message}}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-    
-    {% block body %}{% endblock %}
+    <div>
+        {{ msg }}
+      </div>
   </body>
 </html>

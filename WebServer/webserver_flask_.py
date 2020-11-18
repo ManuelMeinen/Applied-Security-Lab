@@ -167,7 +167,7 @@ def cert_issuance_show_info():
 
 @app.route('/cert_issuance/update_info', methods=['POST'])
 def cert_issuance_update_info():
-    #TODO: check inputs form! 
+    # TODO: check inputs form! 
     # if not request.cookies.get(userid):
     #     return render_template('login.html')
     # data = {"lastname": request.form['lastname'], "firstname": request.form['firstname'], "email": request.form['email'], "password": request.form['password']}
