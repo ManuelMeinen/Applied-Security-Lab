@@ -2,8 +2,8 @@
 /etc/ssl/openssl.cnf
 /home/ubuntu/.rnd
 /home/ubuntu/revoked.pem
-/etc/Flask/certs/
-/etc/Flask/private/
+/etc/Flask/certs/*
+/etc/Flask/private/*
 /var/log/Flask.log
 /var/log/auth.log
 /var/log/syslog
