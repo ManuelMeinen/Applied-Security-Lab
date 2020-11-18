@@ -48,17 +48,17 @@ Components:
 
 
 Assets:
-- [ ] organize into groups: physical, logical, intangible assets (see book)
+- [x] organize into groups: physical, logical, intangible assets (see book)
   (e.g., "web server" appears to refer both to the machine and the service)
-- [ ] do not describe functionality under assets (e.g., for certificates)
-- [ ] do list security requirements with each asset
+- [x] do not describe functionality under assets (e.g., for certificates)
+- [x] do list security requirements with each asset
   (access restrictions, integrity, confidentiality)
 - [ ] missing: security properties for server keys and certificates? 
   users' private keys and certificates? 
 - [ ] missing asset: CRL
-- [ ] should software be an asset as well?
-- [ ] should employees be assets as well?
-- [ ] any intangible assets?
+- [x] should software be an asset as well?
+- [x] should employees be assets as well?
+- [x] any intangible assets?
 
 Threat sources:
 - [ ] quite complete list of possible threat sources

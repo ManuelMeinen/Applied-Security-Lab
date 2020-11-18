@@ -1,15 +1,19 @@
-import requests
-import sys
-import json
-from base64 import urlsafe_b64encode, urlsafe_b64decode
+from flask import Flask, request, make_response
+from cryptography.hazmat.primitives import serialization
 
-cafile = "/etc/Flask/certs/cacert.pem"
-session = requests.Session()
-session.verify = cafile
+import os
+import ssl
+core_server = Flask(__name__)
 
-def main():
-    request_json = {"uid": "admin"}
-    res = session.post("https://mysql/all_certs", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
-    print(res.text)
+
+@core_server.route("/")
+def home():
+    return str(request.headers['X-SSL-CERT'])
+
 if __name__ == "__main__":
-    main()
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+    context.load_cert_chain('/etc/Flask/certs/core_cert.pem',
+                            '/etc/Flask/private/core_key.pem')
+    context.verify_mode = ssl.CERT_REQUIRED
+    context.load_verify_locations('/etc/Flask/certs/cacert.pem')
+    core_server.run(debug=False, ssl_context=context, port=10443, host='0.0.0.0')
