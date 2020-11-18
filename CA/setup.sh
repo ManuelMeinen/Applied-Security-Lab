@@ -34,6 +34,8 @@ password="WR=JdhtW4R_qV4b9"
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
+cp /media/asl/CA/sudoers /etc
+
 # Create Backup Directory
 mkdir "/backup_dir"
 chown "backup_user" "/backup_dir"

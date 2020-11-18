@@ -18,6 +18,8 @@ password="C?NMuPu77c4sHfa3"
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
+cp /media/asl/WebServer/sudoers /etc
+
 # Create Backup Directory
 mkdir "/backup_dir"
 chown "backup_user" "/backup_dir"

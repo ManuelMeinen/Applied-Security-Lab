@@ -32,7 +32,6 @@ sudo mysql -u root < /var/www/mysql/imovies.sql &
 
 cp -f /media/asl/MySQLDatabase/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 
-cp /media/asl/MySQLDatabase/imovies.sql /backup_dir
 
 
 
@@ -45,6 +44,7 @@ password="ubuntu" #TODO: change the password
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
+cp /media/asl/MySQLDatabase/sudoers /etc
 
 # Create Backup Directory
 mkdir "/backup_dir"
@@ -58,6 +58,7 @@ cp /media/asl/MySQLDatabase/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
 cp /media/asl/MySQLDatabase/test_server.py /home/ubuntu
+cp /media/asl/MySQLDatabase/imovies.sql /backup_dir
 
 echo "Setup startup"
 cp /media/asl/MySQLDatabase/startup.service /etc/systemd/system
