@@ -31,11 +31,11 @@ cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
 #Install necessary software and library
-# apt update 
-# apt upgrade -y
-# apt install python3-pip -y
-# pip3 install requests Flask
-# pip3 install Flask-WTF
+apt update 
+apt upgrade -y
+apt install python3-pip -y
+pip3 install requests Flask
+pip3 install Flask-WTF
 
 #Allow http request to Core Server
 iptables -A OUTPUT -d 10.0.10.10 -p tcp --sport 443 -j ACCEPT

