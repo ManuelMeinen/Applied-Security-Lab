@@ -11,7 +11,6 @@ from cryptography.hazmat.primitives.serialization.pkcs12 import serialize_key_an
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 
-import subprocess
 from hashlib import sha1
 import uuid
 import json

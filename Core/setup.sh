@@ -45,6 +45,7 @@ cp /media/asl/Core/core_cert.pem /etc/Flask/certs/core_cert.pem
 cp /media/asl/Core/core_key.pem /etc/Flask/private/core_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
 cp /media/asl/Core/flask_server.py /var/www/core
+cp /media/asl/Core/crons /bin
 
 echo "Setup startup"
 cp /media/asl/Core/startup.service /etc/systemd/system
