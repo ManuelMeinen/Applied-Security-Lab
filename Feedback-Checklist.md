@@ -53,9 +53,9 @@ Assets:
 - [x] do not describe functionality under assets (e.g., for certificates)
 - [x] do list security requirements with each asset
   (access restrictions, integrity, confidentiality)
-- [ ] missing: security properties for server keys and certificates? 
+- [x] missing: security properties for server keys and certificates? 
   users' private keys and certificates? 
-- [ ] missing asset: CRL
+- [x] missing asset: CRL
 - [x] should software be an asset as well?
 - [x] should employees be assets as well?
 - [x] any intangible assets?
