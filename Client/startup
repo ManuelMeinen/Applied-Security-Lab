@@ -2,6 +2,7 @@
 # IPs
 ifconfig enp0s8 192.168.1.10 netmask 255.255.255.0 up
 ip route add 192.168.1.0/24 dev enp0s8
+ip route add 10.0.10.10 via 192.168.1.40 dev enp0s8
 
 # Wireguard route
 ip link add wg0 type wireguard
