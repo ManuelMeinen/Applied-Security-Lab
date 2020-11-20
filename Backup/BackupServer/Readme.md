@@ -4,9 +4,8 @@ There are two ways to backup your files using this backup server:
 1) Let the backup server read from the filesystem where the files are stored that you want to backup. For that simply add the absolute path to the file or directory into the  `Backup_file_list_<MACHINE_NAME>.txt` which can be found in this directory. File path should be of the following form: `
 /home/ubuntu/coucou` and foder path of the following: `/home/ubuntu/test/*`. 
 
-**IMPORTANT:** Make sure the user `backup_user` has the rights to read from this file or directory (he also needs to be able to navigate into this directory)
 
-*NOTE:* To check if the backup was successfull go into the backup driectory on the backup server and unzip the latest backup (the one with the biggest timestamp in the archive's name) (` ~/backup_<MACHINE_NAME>`).
+*NOTE:* To check if the backup was successfull go into the backup driectory on the backup server and unzip the latest backup (the one with the biggest timestamp in the archive's name) (` ~/backup_<MACHINE_NAME>`). Also keep in mind that the `backup_user` gives itself read access to the files that need to be backed up (This won't affect the access permissions for any other user). So it can run `setaclf` as sudo without the need to enter a password.
 
 2) Dump your file(s) into the `backup_dir` on your own machine, go into the file [constants.py](./constants.py) and set the value in the `BACKUP_LETTERBOX` dict of your machine to True.
 

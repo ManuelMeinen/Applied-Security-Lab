@@ -61,8 +61,8 @@ Assets:
 - [x] any intangible assets?
 
 Threat sources:
-- [ ] quite complete list of possible threat sources
-- [ ] add nature? (cf. your threat 15); add malware?
+- [x] quite complete list of possible threat sources
+- [x] add nature? (cf. your threat 15); add malware?
 
 Risk definitions:
 - [ ] simplistic likelihood and impact definitions (cf. book)
