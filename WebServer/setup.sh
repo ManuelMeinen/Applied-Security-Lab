@@ -1,16 +1,12 @@
 #!/bin/bash
 # echo "Nothing to be set up..."
-ifconfig enp0s3 192.168.1.20 netmask 255.255.255.0 up
-ip route add 10.0.10.10 via 192.168.1.40
-ip route add 10.0.20.50 via 192.168.1.40
+
 
 # Add hosts
 echo "10.0.10.10    core" >> /etc/hosts
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
-#Allow SFTP connetions to Backup Server
-iptables -A INPUT -i enp0s3 -s 10.0.20.50 -p tcp --dport 22 -j ACCEPT
-iptables -A OUTPUT -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
+
 # Adding a backup_user
 userdel -r backup_user
 username="backup_user"
@@ -37,10 +33,6 @@ apt install python3-pip -y
 pip3 install requests Flask
 pip3 install Flask-WTF
 
-#Allow http request to Core Server
-iptables -A OUTPUT -d 10.0.10.10 -p tcp --sport 443 -j ACCEPT
-iptables -A INPUT -i enp0s3 -s 10.0.10.10 -p tcp --dport 433 -j ACCEPT
-
 #Copy webpages, scripts and configuration files
 cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
 cp /media/asl/WebServer/webserver_key.pem /etc/ssl/private/webserver_key.pem
@@ -58,8 +50,14 @@ cp /media/asl/WebServer/templates/ca_admin.html /var/www/webserver/templates/ca_
 
 mkdir /var/www/webserver/files
 
-#Run server
-python3 /var/www/webserver/webserver_flask.py
+echo "Setup startup"
+cp /media/asl/WebServer/startup.service /etc/systemd/system
+mkdir /etc/startup
+cp /media/asl/WebServer/startup /etc/startup
+chmod +x /etc/startup/startup
+service startup start
+systemctl enable startup
+
 
 
 
