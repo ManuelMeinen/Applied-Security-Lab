@@ -129,6 +129,15 @@ def account_certificate_revocation():
     else:
        return render_template('home.html', msg='You do not have a certificate.') 
     
+@app.route('/revocation_list', methods=['GET'])
+def revocation_list():
+    revoked = session.get("https://core/revocation_list", data={}, cert=cert_key)
+    filename = "revocation_list.crl"
+    response = make_response(revoked.content)
+    response.headers.set('Content-Type', 'application/text')
+    response.headers.set('Content-Disposition', 'attachment', filename=filename)
+    return response
+    
 
 # TODO: check it works when certificate login is working
 @app.route('/ca_admin', methods=['get'])

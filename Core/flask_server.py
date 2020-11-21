@@ -153,6 +153,10 @@ def manage_certificate():
                 return "No valid certificate to revoke", 400
     return "Authentication Failed", 403
 
+@core_server.route("/revocation_list", methods=["GET"])
+def revocations_list():
+    revoked = session.get("https://ca_server/revocation_list", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    return revoked.content
 
 def check_cookie(request):
     try: 
