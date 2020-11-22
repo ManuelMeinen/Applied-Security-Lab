@@ -7,18 +7,22 @@
     <p>Please update your information if needed.</p>
     <form action="https://webserver/account" method="post">
         <div>
+            {{ form.csrf_token }}
             {{ form.lastname.label() }}
             {{ form.lastname(value=lastname) }}
         </div>
         <div>
+            {{ form.csrf_token }}
             {{ form.firstname.label()  }}
             {{ form.firstname(value=firstname)  }}
         </div>
         <div>
+            {{ form.csrf_token }}
             {{ form.email.label()  }}
             {{ form.email(value=email)  }}
         </div>
         <div>
+            {{ form.csrf_token }}
             {{ form.password.label()  }}
             {{ form.password(value=password)  }}
         </div>

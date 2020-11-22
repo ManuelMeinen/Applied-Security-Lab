@@ -1,20 +1,22 @@
 from flask import Flask, send_file, render_template, request, redirect, session, abort, flash, make_response
+from flask_behind_proxy import FlaskBehindProxy
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.widgets import PasswordInput
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, PasswordField
+from wtforms.validators import DataRequired, Email, Length
 
 import requests
 import os
 import json
 import ssl
 import time
+import re 
 
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 
 
 app = Flask(__name__)
+app_proxied = FlaskBehindProxy(app)
 cafile = "/etc/ssl/certs/cacert.pem"
 session = requests.Session()
 session.verify = cafile
@@ -25,15 +27,23 @@ MAX_AGE = 60*10
 # The cookie name must match the name created by the core server!
 userid = 'userID'
 
-UPLOAD_FOLDER = '/var/www/webserver/files/'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 
 @app.route('/')
 def home():
     if is_loggedin():
         return render_template('home.html')
     else:
+        if request.headers.get('X-SSL-Client-Cert'):
+            data = {'crt': request.headers['X-SSL-Client-Cert']}
+            print(data)
+            response = session.post("https://core/login", data=data, cert=cert_key)
+            print(response)
+            if response.status_code == 200:
+                res = make_response(render_template('home.html'))
+                res.set_cookie(userid, response.cookies.get('userID'), max_age=MAX_AGE)
+                return res
+            else:
+                return render_template('login.html', msg='Unknown certificate!')
         return render_template('login.html')
 
 
@@ -60,10 +70,10 @@ def logout():
 
 
 class account_form(FlaskForm):
-    lastname = StringField("Lastname: ", validators=[DataRequired()])
-    firstname = StringField("Firstname: ", validators=[DataRequired()])
-    email = StringField("Email: ", validators=[DataRequired()])
-    password = StringField('Password', widget=PasswordInput(hide_value=False))
+    lastname = StringField("Lastname: ", validators=[DataRequired(), Length(max=15)])
+    firstname = StringField("Firstname: ", validators=[DataRequired(), Length(max=15)])
+    email = StringField("Email: ", validators=[Email(), Length(max=30)])
+    password = PasswordField('Password')
     submit = SubmitField("Submit")
 
 @app.route('/account', methods=['GET', 'POST'])
@@ -79,19 +89,25 @@ def account():
         else:
             return home()
     if request.method == "POST":
-        #TODO: check for malicious inputs! 
-        data = None
-        if request.form['password'] != '':
-            data = {"lastname": request.form['lastname'], "firstname": request.form['firstname'], "email": request.form['email'], "password": request.form['password']}
-        else :
-            data = {"lastname": request.form['lastname'], "firstname": request.form['firstname'], "email": request.form['email']}
-        response = session.post("https://core/account", data=data, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
-        if response.status_code == 200:
-            data = json.loads(response.content)
-            form = account_form()
-            return render_template('account.html', msg='Your information has been updated', form=form, lastname=data['lastname'], firstname=data['firstname'], email=data['email'])
-        else:
-            return home()
+        form = account_form()
+        form.firstname(value=request.form['firstname'])
+        form.lastname(value=request.form['lastname'])
+        form.email(value=request.form['email'])
+        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+        regex_email = re.compile('[_!#$%^&*()<>?/\|}{~:]')
+        if form.validate() and regex.search(request.form['firstname']) == None and regex.search(request.form['lastname']) == None and regex_email.search(request.form['email']) == None:
+            data = None
+            if request.form['password'] != '':
+                data = {"lastname": request.form['lastname'], "firstname": request.form['firstname'], "email": request.form['email'], "password": request.form['password']}
+            else :
+                data = {"lastname": request.form['lastname'], "firstname": request.form['firstname'], "email": request.form['email']}
+            response = session.post("https://core/account", data=data, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
+            if response.status_code == 200:
+                data = json.loads(response.content)
+                return render_template('account.html', msg='Your information has been updated', form=form, lastname=data['lastname'], firstname=data['firstname'], email=data['email'])
+            else:
+                return home()
+        return render_template('account.html', msg='The inputs are not correct', form=form, lastname=request.form['lastname'], firstname=request.form['firstname'], email=request.form['email'])
 
 
 @app.route('/account/certificate', methods=['POST'])
@@ -145,7 +161,6 @@ def revocation_list():
 def ca_admin():
     if not is_loggedin():
         return home()
-    #TODO: print(request.args.)
     response = session.get("https://core/admin", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
     if response.status_code == 200:
         data = json.loads(response.content)
@@ -176,8 +191,8 @@ if __name__ == "__main__":
     app.secret_key = os.urandom(12)
     app.run(
         debug=False,
-        host='192.168.1.20',
-        port=443,
+        host='127.0.0.1',
+        port=8081,
         ssl_context=context)
 
 

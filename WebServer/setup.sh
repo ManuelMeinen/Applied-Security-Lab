@@ -27,11 +27,21 @@ cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
 #Install necessary software and library
-apt update 
-apt upgrade -y
-apt install python3-pip -y
-pip3 install requests Flask
-pip3 install Flask-WTF
+# apt update 
+# apt upgrade -y
+# apt install python3-pip -y
+# pip3 install requests Flask
+# pip3 install Flask-WTF
+# pip3 install email_validator
+# apt install nginx
+# pip install flask-behind-proxy
+
+#Nginx configuration
+unlink /etc/nginx/sites-enabled/default
+cp /media/asl/WebServer/reverse-proxy.conf /etc/nginx/sites-available/reverse-proxy.conf
+ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+service nginx configtest
+service nginx restart
 
 #Copy webpages, scripts and configuration files
 cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
