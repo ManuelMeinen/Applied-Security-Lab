@@ -23,6 +23,10 @@ chmod 755 /home/backup_user/.ssh
 cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
 
+# Install dependencies
+echo "Install depedencies"
+sh /media/asl/WebServer/installation.sh
+
 #Nginx configuration
 unlink /etc/nginx/sites-enabled/default
 cp /media/asl/WebServer/reverse-proxy.conf /etc/nginx/sites-available/reverse-proxy.conf
@@ -44,8 +48,6 @@ cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.
 cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
 cp /media/asl/WebServer/templates/account.html /var/www/webserver/templates/account.html
 cp /media/asl/WebServer/templates/ca_admin.html /var/www/webserver/templates/ca_admin.html
-
-mkdir /var/www/webserver/files
 
 echo "Setup startup"
 cp /media/asl/WebServer/startup.service /etc/systemd/system
