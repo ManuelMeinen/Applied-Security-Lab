@@ -39,7 +39,7 @@ BACKUP_LETTERBOX = {
     NAME_CA:False,
     NAME_MYSQL_DATABASE:True,
     NAME_FIREWALL:False,
-    NAME_WEB_SERVER:False,
+    NAME_WEB_SERVER:True,
     NAME_VPN:False
 }
 # User names
