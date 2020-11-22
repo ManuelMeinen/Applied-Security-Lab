@@ -1,11 +1,8 @@
 #!/bin/bash
-# echo "Nothing to be set up..."
-
 
 # Add hosts
 echo "10.0.10.10    core" >> /etc/hosts
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
-
 
 # Adding a backup_user
 userdel -r backup_user
@@ -25,16 +22,6 @@ mkdir /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh
 cp /media/asl/WebServer/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
-
-#Install necessary software and library
-# apt update 
-# apt upgrade -y
-# apt install python3-pip -y
-# pip3 install requests Flask
-# pip3 install Flask-WTF
-# pip3 install email_validator
-# apt install nginx
-# pip install flask-behind-proxy
 
 #Nginx configuration
 unlink /etc/nginx/sites-enabled/default
@@ -67,10 +54,6 @@ cp /media/asl/WebServer/startup /etc/startup
 chmod +x /etc/startup/startup
 service startup start
 systemctl enable startup
-
-
-
-
 
 
 
