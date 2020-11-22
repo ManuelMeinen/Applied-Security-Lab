@@ -9,6 +9,7 @@ import requests
 import os
 import json
 import ssl
+import time
 
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 
@@ -30,10 +31,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def home():
-    if not request.cookies.get(userid):
-        return render_template('login.html')
-    else:
+    if is_loggedin():
         return render_template('home.html')
+    else:
+        return render_template('login.html')
 
 
 @app.route('/login', methods=['POST'])
@@ -57,6 +58,7 @@ def logout():
     res.set_cookie(userid, '', max_age=0)
     return res
 
+
 class account_form(FlaskForm):
     lastname = StringField("Lastname: ", validators=[DataRequired()])
     firstname = StringField("Firstname: ", validators=[DataRequired()])
@@ -66,9 +68,8 @@ class account_form(FlaskForm):
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
-    #TODO: this is not secure
-    if not request.cookies.get(userid):
-        return render_template('login.html')
+    if not is_loggedin():
+        return home()
     if request.method == "GET":
         response = session.get("https://core/account", cookies={'userID': request.cookies.get(userid)}, cert=cert_key)
         if response.status_code == 200:
@@ -95,8 +96,8 @@ def account():
 
 @app.route('/account/certificate', methods=['POST'])
 def account_certificate():
-    if not request.cookies.get(userid):
-        return render_template('login.html')
+    if not is_loggedin():
+        return home()
     if request.method == "POST":
         response = session.post("https://core/account/certificate", data={}, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
         if (response.status_code == 200):
@@ -123,8 +124,8 @@ def account_certificate():
 
 @app.route('/account/certificate/revocation', methods=['POST'])
 def account_certificate_revocation():
-    if not request.cookies.get(userid):
-        return render_template('login.html')
+    if not is_loggedin():
+        return home()
     response = session.delete("https://core/account/certificate", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
     if response.status_code == 200:
         return render_template('home.html', msg='Your certificate has been revoked.')
@@ -135,14 +136,28 @@ def account_certificate_revocation():
 # TODO: check it works when certificate login is working
 @app.route('/ca_admin', methods=['get'])
 def ca_admin():
-    if not request.cookies.get(userid):
+    if not is_loggedin():
         return home()
+    #TODO: print(request.args.)
     response = session.get("https://core/admin", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
     if response.status_code == 200:
         data = json.loads(response.content)
         return render_template('ca_admin.html', serial=data['serial'], nbre_issued=data['nbre_issued'], nbre_revoked=data['nbre_revoked'])
     else:
-        return render_template('home.html', error='You are not an admin!')
+        return render_template('home.html', msg='You are not an admin.')
+
+
+def is_loggedin():
+    if request.cookies.get("userID"):
+        cookie = request.cookies.get("userID")
+        cookie = json.loads(urlsafe_b64decode(cookie.encode()).decode())
+        timestamp = cookie["timestamp"]
+        if(time.time() - float(timestamp) > MAX_AGE):
+            return False
+        else:
+            return True
+    else:
+        return False
 
 
 if __name__ == "__main__":
