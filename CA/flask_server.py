@@ -71,6 +71,14 @@ def check_certificate():
     else:
         return "Error"
 
+@ca_server.route("/revocation_list", methods=["GET"])
+def revocation_list():
+    filename = "/home/ubuntu/revoked.pem"
+    f = open(filename, "r")
+    revoked = f.read()
+    f.close()
+    return revoked
+
 if __name__ == "__main__":
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
     context.load_cert_chain('/etc/Flask/certs/ca_cert.pem', '/etc/Flask/private/ca_key.pem')

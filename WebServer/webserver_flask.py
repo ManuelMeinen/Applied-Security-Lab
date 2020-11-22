@@ -1,4 +1,4 @@
-from flask import Flask, send_file, send_from_directory, render_template, request, redirect, session, abort, flash, make_response
+from flask import Flask, send_file, render_template, request, redirect, session, abort, flash, make_response
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -101,23 +101,21 @@ def account_certificate():
     if request.method == "POST":
         response = session.post("https://core/account/certificate", data={}, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
         if (response.status_code == 200):
-            #TODO: delete certificate when not needed anymore
             username = json.loads(urlsafe_b64decode(request.cookies.get(userid)).decode())['username']
             filename = username + "_certificate.p12"
-            f = open(os.path.join(app.config['UPLOAD_FOLDER'], filename), "wb")
-            f.write(urlsafe_b64decode(response.content))
-            f.close()
-            return send_from_directory(directory=app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
+            response = make_response(urlsafe_b64decode(response.content))
+            response.headers.set('Content-Type', 'application/octet-stream')
+            response.headers.set('Content-Disposition', 'attachment', filename=filename)
+            return response
         if (response.status_code == 400):
             response = session.get("https://core/account/certificate", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
             if response.status_code == 200:
-                #TODO: delete certificate when not needed anymore
                 username = json.loads(urlsafe_b64decode(request.cookies.get(userid)).decode())['username']
                 filename = username + "_certificate.pem"
-                f = open(os.path.join(app.config['UPLOAD_FOLDER'], filename), "wb")
-                f.write(response.content)
-                f.close()
-                return send_from_directory(directory=app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
+                response = make_response(response.content)
+                response.headers.set('Content-Type', 'application/text')
+                response.headers.set('Content-Disposition', 'attachment', filename=filename)
+                return response
             else:
                 return home()
 
@@ -131,6 +129,15 @@ def account_certificate_revocation():
         return render_template('home.html', msg='Your certificate has been revoked.')
     else:
        return render_template('home.html', msg='You do not have a certificate.') 
+    
+@app.route('/revocation_list', methods=['GET'])
+def revocation_list():
+    revoked = session.get("https://core/revocation_list", data={}, cert=cert_key)
+    filename = "revocation_list.crl"
+    response = make_response(revoked.content)
+    response.headers.set('Content-Type', 'application/text')
+    response.headers.set('Content-Disposition', 'attachment', filename=filename)
+    return response
     
 
 # TODO: check it works when certificate login is working

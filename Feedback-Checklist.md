@@ -8,7 +8,7 @@ General:
 incomplete and many details remain to be worked out
 - please justify your design choices, e.g., by referring to security principles
 - you need to improve the report's organization:
-  - Sect 1.2 should describe the system's functionality from a user's
+  - [ ] Sect 1.2 should describe the system's functionality from a user's
     perspective (similar to assignment)
   - most of your Sect 1.2 would better fit into Sect 1.4 (components), 
     as it describes internal interfaces of the components
@@ -21,7 +21,7 @@ incomplete and many details remain to be worked out
   not in the security design)
 
 System Characterization/Overview (see also General comments above!):
-- [ ] system overview is missing! (high-level description, including 
+- [x] system overview is missing! (high-level description, including 
   explanation of Fig 1)
 - [ ] how does web server communicate with core server (TLS?)
 - [ ] unclear why different authentication leads to different revocation behavior
@@ -53,16 +53,16 @@ Assets:
 - [x] do not describe functionality under assets (e.g., for certificates)
 - [x] do list security requirements with each asset
   (access restrictions, integrity, confidentiality)
-- [ ] missing: security properties for server keys and certificates? 
+- [x] missing: security properties for server keys and certificates? 
   users' private keys and certificates? 
-- [ ] missing asset: CRL
+- [x] missing asset: CRL
 - [x] should software be an asset as well?
 - [x] should employees be assets as well?
 - [x] any intangible assets?
 
 Threat sources:
-- [ ] quite complete list of possible threat sources
-- [ ] add nature? (cf. your threat 15); add malware?
+- [x] quite complete list of possible threat sources
+- [x] add nature? (cf. your threat 15); add malware?
 
 Risk definitions:
 - [ ] simplistic likelihood and impact definitions (cf. book)
@@ -70,6 +70,7 @@ Risk definitions:
   but the descriptions of the assets does not refer to these
   (e.g., which level is a user's private key?)
   
+
 Risk Analysis:
 - [ ] please always indicate the threat source: who (threat source) does what 
   (threat action).

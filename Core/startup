@@ -35,5 +35,9 @@ iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT
 iptables -A INPUT -i enp0s3 -s 10.0.20.50 -d 10.0.20.10 -p tcp --dport 22 -j ACCEPT
 iptables -A OUTPUT -s 10.0.20.10 -d 10.0.20.50 -p tcp --sport 22 -j ACCEPT
 
+# Allow crons
+iptables -A INPUT -i enp0s8 -d 10.0.10.10 -p tcp --dport 11061 -j ACCEPT
+iptables -A OUTPUT -s 10.0.10.10 -p tcp --sport 11061 -j ACCEPT
 
+/bin/crons > /var/log/crons.log 2>&1 &
 python3 /var/www/core/flask_server.py > /var/log/Flask.log 2>&1 
