@@ -42,10 +42,22 @@ mkdir /etc/Flask
 mkdir /etc/Flask/private
 mkdir /etc/Flask/certs
 cp /media/asl/Core/core_cert.pem /etc/Flask/certs/core_cert.pem
+chmod 644 /etc/Flask/certs/core_cert.pem
+chown ubuntu:root /etc/Flask/certs/core_cert.pem
 cp /media/asl/Core/core_key.pem /etc/Flask/private/core_key.pem
+chmod 600 /etc/Flask/private/core_key.pem
+chown ubuntu:root /etc/Flask/private/core_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
+chmod 644 /etc/Flask/certs/cacert.pem
+chown ubuntu:root /etc/Flask/certs/cacert.pem
 cp /media/asl/Core/flask_server.py /var/www/core
+chmod 700 /var/www/core/flask_server.py
+chown ubuntu:root /var/www/core/flask_server.py
+chmod 700 /bin/crons
 cp /media/asl/Core/crons /bin
+touch /var/log/Flask.log
+chmod 640 /var/log/Flask.log
+chown ubuntu:syslog /var/log/Flask.log
 
 echo "Setup startup"
 cp /media/asl/Core/startup.service /etc/systemd/system

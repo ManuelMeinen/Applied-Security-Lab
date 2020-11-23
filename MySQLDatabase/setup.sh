@@ -21,16 +21,31 @@ mkdir /etc/Flask
 mkdir /etc/Flask/private
 mkdir /etc/Flask/certs
 cp /media/asl/MySQLDatabase/flask_server.py /var/www/mysql
+chmod 740 /var/www/mysql/flask_server.py 
+chown ubuntu:root /var/www/mysql/flask_server.py 
 cp /media/asl/MySQLDatabase/sql_server.py /var/www/mysql
+chmod 740 /var/www/mysql/sql_server.py
+chown ubuntu:root /var/www/mysql/sql_server.py 
 cp /media/asl/MySQLDatabase/imovies.sql /var/www/mysql
+chmod 640 /var/www/mysql/imovies.sql 
 cp /media/asl/MySQLDatabase/database_password.txt /var/www/mysql
-chmod 700 /var/www/mysql/database_password.txt
+chmod 600 /var/www/mysql/database_password.txt
+chown ubuntu:root /var/www/mysql/database_password.txt
 cp /media/asl/MySQLDatabase/mysql_cert.pem /etc/Flask/certs
+chmod 640 /etc/Flask/certs/mysql_cert.pem
+chown ubuntu:root /etc/Flask/certs/mysql_cert.pem
 cp /media/asl/MySQLDatabase/mysql_key.pem /etc/Flask/private
+chmod 600 /etc/Flask/private/mysql_key.pem
+chown ubuntu:root /etc/Flask/private/mysql_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
+chmod 640 /etc/Flask/certs/cacert.pem
+chown ubuntu:root /etc/Flask/certs/cacert.pem
 sudo mysql -u root < /var/www/mysql/imovies.sql &
 
 cp -f /media/asl/MySQLDatabase/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+touch /var/log/Flask.log
+chmod 640 /var/log/Flask.log
+chown ubuntu:root /var/log/Flask.log
 
 
 

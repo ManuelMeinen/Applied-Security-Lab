@@ -65,7 +65,7 @@ def admin():
     check, username = check_cookie(request)
     
     if check and check_is_admin(username) and check_connected_with_cert(request):
-        res = session.get("https://ca_server/certs/serial", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+        res = session.get("https://ca_server:10443/certs/serial", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
         serial = res.text.replace("\n","")
         issuedCert, revokedCert = statistics_certificates()
         stat = {
@@ -83,7 +83,7 @@ def get_account_info():
     check, username = check_cookie(request)
     if check: 
         username_json = {"uid": username}
-        res = session.post("https://mysql/get_info", data=json.dumps(username_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+        res = session.post("https://mysql:10443/get_info", data=json.dumps(username_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
         if res.status_code == 404 or res.status_code == 400:
             return "User not known", 404
         res = json.loads(res.content)
@@ -96,7 +96,7 @@ def get_account_info():
             # Add possibility to modify password
             if request.form.get("password"):
                 user["pwd"] = hash_password(request.form.get("password"))
-            res = session.post("https://mysql/update", data=json.dumps(user), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+            res = session.post("https://mysql:10443/update", data=json.dumps(user), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
             if res.status_code == 404 or res.status_code == 400:
                 return "User not known", 404
             if res.status_code == 520:
@@ -121,20 +121,19 @@ def manage_certificate():
             cert = has_valid_certificate(username)
             if cert== None:
                 return "No valid certificate", 404
-            return "-----BEGIN CERTIFICATE-----\n" + urlsafe_b64decode(cert.encode()).decode() + "\n-----END CERTIFICATE-----"
+            return refactor_certificate(cert)
         
         elif request.method == "POST":
             if has_valid_certificate(username) != None:
                 return "A valid cert already exists", 400
             [private_key, csr] = create_CSR(username)
-            res = session.post("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'csr': csr})
+            res = session.post("https://ca_server:10443/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'csr': csr})
             if(res.status_code != 200):
                 return "Error was not added", 500
-            crt = "-----BEGIN CERTIFICATE-----" + urlsafe_b64decode(res.text.encode()).decode().split("-----BEGIN CERTIFICATE-----")[1]
+            crt = "-----BEGIN CERTIFICATE-----" + res.text.split("-----BEGIN CERTIFICATE-----")[1]
             crt_db = crt.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "").strip().replace("\n","")
-            crt_db = urlsafe_b64encode(crt_db.encode()).decode()
             if add_certificate(username, crt_db) != 200:
-                res = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': res.text})
+                res = session.delete("https://ca_server:10443/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': res.text})
                 return "Error was not added", 500
             pkcs12 = create_pkcs12(username, private_key, crt)
             save_private_key(username, private_key)
@@ -142,11 +141,11 @@ def manage_certificate():
         elif request.method == "DELETE":
             cert = has_valid_certificate(username)
             if cert != 0:
-                res1 = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': cert})
+                res1 = session.delete("https://ca_server:10443/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': refactor_certificate(cert)})
                 if res1.status_code != 200:
                     return "Certificate not revoked", 500
                 payload_cert = {'certificate': cert}
-                res2 = session.post("https://mysql/revoke_user_certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data=json.dumps(payload_cert))
+                res2 = session.post("https://mysql:10443/revoke_user_certificate", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data=json.dumps(payload_cert))
                 if res2.status_code != 200:
                     return "Certificate not revoked", 500
                 return "Success"
@@ -154,9 +153,12 @@ def manage_certificate():
                 return "No valid certificate to revoke", 400
     return "Authentication Failed", 403
 
+def refactor_certificate(cert):
+    return "-----BEGIN CERTIFICATE-----\n" + cert + "\n-----END CERTIFICATE-----"
+
 @core_server.route("/revocation_list", methods=["GET"])
 def revocations_list():
-    revoked = session.get("https://ca_server/revocation_list", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    revoked = session.get("https://ca_server:10443/revocation_list", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     return revoked.content
 
 def check_cookie(request):
@@ -189,7 +191,7 @@ def check_cookie(request):
 
 def check_is_admin(username):
     username_json = {"uid": username}
-    res = session.post("https://mysql/get_info", data=json.dumps(username_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = session.post("https://mysql:10443/get_info", data=json.dumps(username_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     if res.status_code == 404 or res.status_code == 400:
         return False
     is_admin = json.loads(res.content)["is_admin"]
@@ -206,7 +208,7 @@ def check_user_credential(username, password, certificate):
         if password:
             password = hash_password(password)
             json_id = '{"uid": "'+ username +'"}'
-            res = session.post("https://mysql/password", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+            res = session.post("https://mysql:10443/password", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
             if res.status_code == 404 or res.status_code == 400:
                 return None
             storedPwd = json.loads(res.content)['pwd']
@@ -218,20 +220,20 @@ def find_username_by_cert(cert):
     cert = cert.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "").replace("\n","").replace("\t","").strip()
     request_json = {"uid": "admin"}
     json_id = '{"certificate": "'+ urlsafe_b64encode(cert.encode()).decode() +'"}'
-    res = session.post("https://mysql/who_has_this_cert", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = session.post("https://mysql:10443/who_has_this_cert", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     if res.status_code == 404 or res.status_code == 400:
         return None
     username = json.loads(res.content)["uid"]
     return username        
 
 def statistics_certificates():
-    res = session.post("https://mysql/certs_stats", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = session.post("https://mysql:10443/certs_stats", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     res = json.loads(res.content.decode())
     return res["number_certificates"], res["number_revoked"]
 
 def has_valid_certificate(username):
     request_json = {"uid": username}
-    res = session.post("https://mysql/all_certs", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = session.post("https://mysql:10443/all_certs", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     res = json.loads(res.content.decode())
     if len(res["certificates"])==0:
         return None
@@ -240,7 +242,7 @@ def has_valid_certificate(username):
 
 def add_certificate(username, crt):
     request_json = {"uid": username, "certificate": crt}
-    res = session.post("https://mysql/add_user_certificate", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = session.post("https://mysql:10443/add_user_certificate", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     return res.status_code
 
 def hash_password(password):
@@ -289,4 +291,4 @@ if __name__ == "__main__":
             password=None,
         )
     public_key = private_key.public_key()
-    core_server.run(debug=False, ssl_context=context, port=443, host='0.0.0.0')
+    core_server.run(debug=False, ssl_context=context, port=10443, host='0.0.0.0')

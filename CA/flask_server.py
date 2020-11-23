@@ -36,16 +36,16 @@ def do_new_cert(request):
     f.close()
     os.remove(filename)
     os.remove(filename + ".pem")
-    return urlsafe_b64encode(crt.encode()).decode()
+    return crt
 
 def revoke_certificate(request):
     filename = "/tmp/"+str(time.time())
     f = open(filename, "w")
-    csr = urlsafe_b64decode(request.form['crt']).decode()
+    csr = request.form['crt']
     f.write(csr)
     f.close()
-    resultRevoke = subprocess.check_output("sudo openssl ca -revoke " + filename + " -config /etc/ssl/openssl.cnf -passin pass:ubuntu", stderr=subprocess.STDOUT, shell=True)
-    resultGencrl = subprocess.check_output("sudo openssl ca -gencrl -out /etc/ssl/CA/crl/crl.pem -passin pass:ubuntu", stderr=subprocess.STDOUT, shell=True)
+    resultRevoke = subprocess.check_output("openssl ca -revoke " + filename + " -config /etc/ssl/openssl.cnf -passin pass:ubuntu", stderr=subprocess.STDOUT, shell=True)
+    resultGencrl = subprocess.check_output("openssl ca -gencrl -out /etc/ssl/CA/crl/crl.pem -passin pass:ubuntu", stderr=subprocess.STDOUT, shell=True)
     os.remove('/home/ubuntu/revoked.pem')
     os.remove(filename)
     resultCreate = subprocess.check_output("cat /etc/ssl/CA/cacert.pem /etc/ssl/CA/crl/crl.pem > /home/ubuntu/revoked.pem", stderr=subprocess.STDOUT, shell=True)
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     context.load_cert_chain('/etc/Flask/certs/ca_cert.pem', '/etc/Flask/private/ca_key.pem')
     context.verify_mode = ssl.CERT_REQUIRED
     context.load_verify_locations('/etc/Flask/certs/cacert.pem')
-    ca_server.run(debug=False, ssl_context=context, port= 443, host= '0.0.0.0')
+    ca_server.run(debug=False, ssl_context=context, port= 10443, host= '0.0.0.0')

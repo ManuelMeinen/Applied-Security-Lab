@@ -21,7 +21,7 @@ session.verify = cafile
 def main():
     username = sys.argv[1]
     [private_key, csr] = create_CSR(username)
-    res = session.post("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'csr': csr})
+    res = session.post("https://ca_server:10443/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'csr': csr})
     if res.status_code != 200:
         print("error")
     else:
@@ -36,14 +36,14 @@ def main():
         f.write(cert.public_bytes(serialization.Encoding.PEM).decode())
         f.close()
         raw_cert = urlsafe_b64encode(raw_cert).decode()
-        res = session.post("https://ca_server/certs/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        res = session.post("https://ca_server:10443/certs/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
         # print(res.text)
-        res = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        res = session.delete("https://ca_server:10443/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
         # print(res.text)
-        res = session.post("https://ca_server/certs/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
+        res = session.post("https://ca_server:10443/certs/check", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': raw_cert})
         # print(res.text)
 
-    res = session.get("https://ca_server/certs/serial", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = session.get("https://ca_server:10443/certs/serial", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     # print(res.text)
 
 def create_CSR(username):

@@ -4,6 +4,7 @@ echo "Setup VPN"
 
 # Create VPN connection with wireguard
 cp /media/asl/VPN/wg_private /home/ubuntu/.ssh/
+chmod +640 /home/ubuntu/.ssh/wg_private 
 
 
 # Adding a backup_user

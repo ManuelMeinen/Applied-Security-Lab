@@ -313,4 +313,4 @@ if __name__ == '__main__':
                             '/etc/Flask/private/mysql_key.pem')
     context.verify_mode = ssl.CERT_REQUIRED
     context.load_verify_locations('/etc/Flask/certs/cacert.pem')
-    app.run(debug=False, ssl_context=context, port=443, host='0.0.0.0')
+    app.run(debug=False, ssl_context=context, port=10443, host='0.0.0.0')

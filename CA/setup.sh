@@ -11,15 +11,25 @@ mkdir /etc/ssl/CA/newcerts
 mkdir /etc/ssl/CA/private
 mkdir /etc/ssl/CA/crl
 touch /etc/ssl/CA/index.txt
+chmod 700 /etc/ssl/CA/index.txt
 touch /etc/ssl/CA/index.txt.attr
+chmod 700 /etc/ssl/CA/index.txt.attr
 cp /media/asl/CA/openssl.cnf /etc/ssl/
+chmod 640 /etc/ssl/openssl.cnf
 cp /media/asl/CA/cakey.pem /etc/ssl/CA/private
+chmod 600 /etc/ssl/CA/private/cakey.pem 
 cp /media/asl/CA/cacert.pem /etc/ssl/CA
+chmod 640 /etc/ssl/CA/cacert.pem 
 cp /media/asl/CA/.rnd /home/ubuntu
+chmod 640 /home/ubuntu/.rnd
 echo "01" > /etc/ssl/CA/serial
+chmod 640 /etc/ssl/CA/serial
 echo "01" > /etc/ssl/CA/crlnumber
+chmod 640 /etc/ssl/CA/crlnumber
 openssl ca -gencrl -out /etc/ssl/CA/crl/crl.pem -passin pass:ubuntu
+chmod 640 /etc/ssl/CA/crl/crl.pem
 cat /etc/ssl/CA/cacert.pem  /etc/ssl/CA/crl/crl.pem > /home/ubuntu/revoked.pem
+chmod 640 /home/ubuntu/revoked.pem
 
 
 echo "10.0.20.10    core" >> /etc/hosts
@@ -54,10 +64,15 @@ mkdir /etc/Flask/private
 mkdir /etc/Flask/certs
 
 cp /media/asl/CA/ca_server_cert.pem /etc/Flask/certs/ca_cert.pem
+chmod 640 /etc/Flask/certs/ca_cert.pem
 cp /media/asl/CA/ca_server_key.pem /etc/Flask/private/ca_key.pem
-cp /media/asl/CA/ca_server_key.pem /etc/Flask/private/ca_key.pem
+chmod 600 /etc/Flask/private/ca_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/
+chmod 640 /etc/Flask/certs/cacert.pem
 cp /media/asl/CA/flask_server.py /var/www/ca
+chmod 700 /var/www/ca/flask_server.py
+touch /var/log/Flask.log
+chmod 640 /var/log/Flask.log
 
 echo "Setup startup"
 cp /media/asl/CA/startup.service /etc/systemd/system

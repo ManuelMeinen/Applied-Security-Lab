@@ -45,7 +45,7 @@ def home():
         if request.headers.get('X-SSL-Client-Cert'):
             data = {'crt': request.headers['X-SSL-Client-Cert']}
             session.cookies.clear()
-            response = session.post("https://core/login", data=data, cert=cert_key)
+            response = session.post("https://core:10443/login", data=data, cert=cert_key)
             if response.status_code == 200:
                 res = make_response(render_template('home.html'))
                 res.set_cookie(userid, response.cookies.get('userID'), max_age=MAX_AGE)
@@ -61,7 +61,7 @@ def login():
     if request.method == "POST":
         data = {"username": request.form['username'], "password": request.form['password']}
         session.cookies.clear()
-        response = session.post("https://core/login", data=data, cert=cert_key)
+        response = session.post("https://core:10443/login", data=data, cert=cert_key)
         if response.status_code == 200:
             res = make_response(render_template('home.html'))
             res.set_cookie(userid, response.cookies.get('userID'), max_age=MAX_AGE)
@@ -94,7 +94,7 @@ def account():
         return home()
     if request.method == "GET":
         session.cookies.clear()
-        response = session.get("https://core/account", cookies={'userID': request.cookies.get(userid)}, cert=cert_key)
+        response = session.get("https://core:10443/account", cookies={'userID': request.cookies.get(userid)}, cert=cert_key)
         if response.status_code == 200:
             data = json.loads(response.content)
             form = account_form()
@@ -115,7 +115,7 @@ def account():
             else :
                 data = {"lastname": request.form['lastname'], "firstname": request.form['firstname'], "email": request.form['email']}
             session.cookies.clear()
-            response = session.post("https://core/account", data=data, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
+            response = session.post("https://core:10443/account", data=data, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
             if response.status_code == 200:
                 data = json.loads(response.content)
                 return render_template('account.html', msg='Your information has been updated', form=form, lastname=data['lastname'], firstname=data['firstname'], email=data['email'])
@@ -131,7 +131,7 @@ def account_certificate():
         return home()
     if request.method == "POST":
         session.cookies.clear()
-        response = session.post("https://core/account/certificate", data={}, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
+        response = session.post("https://core:10443/account/certificate", data={}, cert=cert_key, cookies={'userID': request.cookies.get(userid)})
         if (response.status_code == 200):
             username = json.loads(urlsafe_b64decode(request.cookies.get(userid)).decode())['username']
             filename = username + "_certificate.p12"
@@ -141,7 +141,7 @@ def account_certificate():
             return response
         if (response.status_code == 400):
             session.cookies.clear()
-            response = session.get("https://core/account/certificate", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
+            response = session.get("https://core:10443/account/certificate", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
             if response.status_code == 200:
                 username = json.loads(urlsafe_b64decode(request.cookies.get(userid)).decode())['username']
                 filename = username + "_certificate.pem"
@@ -159,7 +159,7 @@ def account_certificate_revocation():
     if not is_loggedin():
         return home()
     session.cookies.clear()
-    response = session.delete("https://core/account/certificate", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
+    response = session.delete("https://core:10443/account/certificate", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
     if response.status_code == 200:
         return render_template('home.html', msg='Your certificate has been revoked.')
     else:
@@ -168,7 +168,7 @@ def account_certificate_revocation():
 @app.route('/revocation_list', methods=['GET'])
 @limiter.exempt
 def revocation_list():
-    revoked = session.get("https://core/revocation_list", data={}, cert=cert_key)
+    revoked = session.get("https://core:10443/revocation_list", data={}, cert=cert_key)
     filename = "revocation_list.crl"
     response = make_response(revoked.content)
     response.headers.set('Content-Type', 'application/text')
@@ -183,7 +183,7 @@ def ca_admin():
     if not is_loggedin():
         return home()
     session.cookies.clear()
-    response = session.get("https://core/admin", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
+    response = session.get("https://core:10443/admin", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
     if response.status_code == 200:
         data = json.loads(response.content)
         return render_template('ca_admin.html', serial=data['serial'], nbre_issued=data['nbreissued'], nbre_revoked=data['nbrerevoked'])
