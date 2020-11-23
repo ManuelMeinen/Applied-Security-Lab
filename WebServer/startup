@@ -35,5 +35,5 @@ iptables -A INPUT -s 127.0.0.1 -j ACCEPT
 iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT
 
 #Run server
-python3 /var/www/webserver/webserver_flask.py > /var/log/Flask.log 2>&1
 service nginx start 
+su ubuntu -c "python3 /var/www/webserver/webserver_flask.py > /var/log/Flask.log 2>&1"

@@ -176,8 +176,6 @@ def revocation_list():
     response.headers.set('Content-Disposition', 'attachment', filename=filename)
     return response
     
-
-# TODO: check it works when certificate login is working
 @app.route('/ca_admin', methods=['get'])
 @limiter.exempt
 def ca_admin():

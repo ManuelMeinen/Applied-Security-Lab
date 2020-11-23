@@ -219,7 +219,7 @@ def check_user_credential(username, password, certificate):
 def find_username_by_cert(cert):
     cert = cert.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "").replace("\n","").replace("\t","").strip()
     request_json = {"uid": "admin"}
-    json_id = '{"certificate": "'+ urlsafe_b64encode(cert.encode()).decode() +'"}'
+    json_id = '{"certificate": "'+ cert +'"}'
     res = session.post("https://mysql:10443/who_has_this_cert", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     if res.status_code == 404 or res.status_code == 400:
         return None

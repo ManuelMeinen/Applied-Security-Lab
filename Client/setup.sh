@@ -16,8 +16,7 @@ echo "nameserver 8.8.8.8" > /etc/resolv.conf
 cp /media/asl/Client/wg_private /home/ubuntu/.ssh/
 
 # Add CA root cert to trusted cert
-cp /media/asl/CA/cacert.pem /etc/ssl/certs/HomeCA.pem
-update-ca-certificates 
+cp /media/asl/CA/cacert.pem /home/ubuntu
 
 echo "Setup startup"
 cp /media/asl/Client/startup.service /etc/systemd/system

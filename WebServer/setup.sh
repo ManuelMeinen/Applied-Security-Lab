@@ -32,20 +32,20 @@ mkdir /etc/Flask
 mkdir /etc/Flask/private
 mkdir /etc/Flask/certs
 cp /media/asl/WebServer/webserver_cert.pem /etc/Flask/certs/webserver_cert.pem
-chown root /etc/Flask/certs/webserver_cert.pem
-chmod 744 /etc/Flask/certs/webserver_cert.pem
+chown ubuntu:root /etc/Flask/certs/webserver_cert.pem
+chmod 640 /etc/Flask/certs/webserver_cert.pem
 cp /media/asl/WebServer/webserver_key.pem /etc/Flask/private/webserver_key.pem
-chown root /etc/Flask/private/webserver_key.pem
-chmod 744 /etc/Flask/private/webserver_key.pem
+chown ubuntu:root /etc/Flask/private/webserver_key.pem
+chmod 600 /etc/Flask/private/webserver_key.pem
 cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
-chown root /etc/Flask/certs/cacert.pem
-chmod 744 /etc/Flask/certs/cacert.pem
+chown ubuntu:root /etc/Flask/certs/cacert.pem
+chmod 640 /etc/Flask/certs/cacert.pem
 
 #Nginx configuration
 unlink /etc/nginx/sites-enabled/default
 cp /media/asl/WebServer/reverse-proxy.conf /etc/nginx/sites-available/reverse-proxy.conf
 chown root /etc/nginx/sites-available/reverse-proxy.conf
-chmod 744 /etc/nginx/sites-available/reverse-proxy.conf
+chmod 600 /etc/nginx/sites-available/reverse-proxy.conf
 ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
 service nginx configtest
 systemctl enable nginx
@@ -54,22 +54,26 @@ service nginx restart
 #Copy webpages, scripts and configuration files
 mkdir -p /var/www/webserver/
 cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
-chown root /var/www/webserver/webserver_flask.py
-chmod 744 /var/www/webserver/webserver_flask.py
+chown ubuntu:root /var/www/webserver/webserver_flask.py
+chmod 740 /var/www/webserver/webserver_flask.py
 
 mkdir -p /var/www/webserver/templates
 cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
-chown root /var/www/webserver/templates/login.html
-chmod 744 /var/www/webserver/templates/login.html
+chown ubuntu:root /var/www/webserver/templates/login.html
+chmod 640 /var/www/webserver/templates/login.html
 cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
-chown root /var/www/webserver/templates/home.html
-chmod 744 /var/www/webserver/templates/home.html
+chown ubuntu:root /var/www/webserver/templates/home.html
+chmod 640 /var/www/webserver/templates/home.html
 cp /media/asl/WebServer/templates/account.html /var/www/webserver/templates/account.html
-chown root /var/www/webserver/templates/account.html
-chmod 744 /var/www/webserver/templates/account.html
+chown ubuntu:root /var/www/webserver/templates/account.html
+chmod 640 /var/www/webserver/templates/account.html
 cp /media/asl/WebServer/templates/ca_admin.html /var/www/webserver/templates/ca_admin.html
-chown root /var/www/webserver/templates/ca_admin.html
-chmod 744 /var/www/webserver/templates/ca_admin.html
+chown ubuntu:root /var/www/webserver/templates/ca_admin.html
+chmod 640 /var/www/webserver/templates/ca_admin.html
+
+touch /var/log/Flask.log
+chmod 640 /var/log/Flask.log
+chown ubuntu:root /var/log/Flask.log
 
 echo "Setup startup"
 cp /media/asl/WebServer/startup.service /etc/systemd/system
