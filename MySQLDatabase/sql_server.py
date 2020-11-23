@@ -26,12 +26,6 @@ def get_user_info(user_id):
 
         record = cursor.fetchone()
 
-        # cursor = connection.cursor()
-        # sql_select_query = "select lastname, firstname, email, is_admin from users where users.uid = '"+user_id+"'"
-
-        # cursor.execute(sql_select_query)
-        # record = cursor.fetchone()
-
     except Error as e:
         print("Error while connecting to MySQL", e)
 
@@ -79,8 +73,6 @@ def get_password(user_id):
         input_data = (user_id, )
         cursor.execute(sql_select_query, input_data)
         record = cursor.fetchone()
-
-        print(record)
 
     except Error as e:
         print("Error while connecting to MySQL", e)
@@ -268,8 +260,6 @@ def get_certs(uid):
         input_data = (uid, )
         cursor.execute(sql_select_query, input_data)
         record = cursor.fetchall()
-
-        print(record, type(record))
 
     except Error as e:
         print("Error while connecting to MySQL", e)
