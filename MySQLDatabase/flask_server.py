@@ -199,7 +199,6 @@ def add_certificate():
     certificate = ''
     if 'certificate' in data:
         certificate=data['certificate']
-    print(certificate)
     added_row = sql_server.add_certificate(uid, certificate)
 
     if added_row is None:
@@ -278,8 +277,6 @@ def get_all_certs():
         string_certs = string_certs + '"'+ c+ '"'+','
     string_certs = string_certs[:-1] if string_certs[-1] == ',' else string_certs
     string_certs = string_certs + ']'
-
-    print("STRING CERTS", string_certs)
 
     response_json = '{"certificates": '+string_certs+'}'
 

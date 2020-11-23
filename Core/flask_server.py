@@ -221,7 +221,6 @@ def find_username_by_cert(cert):
     res = session.post("https://mysql/who_has_this_cert", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     if res.status_code == 404 or res.status_code == 400:
         return None
-    print(res.content)
     username = json.loads(res.content)["uid"]
     return username        
 
