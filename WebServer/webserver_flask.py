@@ -1,6 +1,9 @@
 from flask import Flask, send_file, render_template, request, redirect, session, abort, flash, make_response
 from flask_behind_proxy import FlaskBehindProxy
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Email, Length
@@ -27,8 +30,14 @@ MAX_AGE = 60*10
 # The cookie name must match the name created by the core server!
 userid = 'userID'
 
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 @app.route('/')
+@limiter.exempt
 def home():
     if is_loggedin():
         return render_template('home.html')
@@ -48,6 +57,7 @@ def home():
 
 
 @app.route('/login', methods=['POST'])
+@limiter.limit("5/minute")
 def login():
     if request.method == "POST":
         data = {"username": request.form['username'], "password": request.form['password']}
@@ -63,6 +73,7 @@ def login():
 
 
 @app.route("/logout", methods=['POST'])
+@limiter.exempt
 def logout():
     res = make_response(render_template('login.html'))
     res.set_cookie(userid, '', max_age=0)
@@ -77,6 +88,7 @@ class account_form(FlaskForm):
     submit = SubmitField("Submit")
 
 @app.route('/account', methods=['GET', 'POST'])
+@limiter.exempt
 def account():
     if not is_loggedin():
         return home()
@@ -111,6 +123,7 @@ def account():
 
 
 @app.route('/account/certificate', methods=['POST'])
+@limiter.exempt
 def account_certificate():
     if not is_loggedin():
         return home()
@@ -137,6 +150,7 @@ def account_certificate():
 
 
 @app.route('/account/certificate/revocation', methods=['POST'])
+@limiter.exempt
 def account_certificate_revocation():
     if not is_loggedin():
         return home()
@@ -147,6 +161,7 @@ def account_certificate_revocation():
        return render_template('home.html', msg='You do not have a certificate.') 
     
 @app.route('/revocation_list', methods=['GET'])
+@limiter.exempt
 def revocation_list():
     revoked = session.get("https://core/revocation_list", data={}, cert=cert_key)
     filename = "revocation_list.crl"
@@ -158,6 +173,7 @@ def revocation_list():
 
 # TODO: check it works when certificate login is working
 @app.route('/ca_admin', methods=['get'])
+@limiter.exempt
 def ca_admin():
     if not is_loggedin():
         return home()
