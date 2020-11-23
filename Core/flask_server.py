@@ -121,7 +121,7 @@ def manage_certificate():
             cert = has_valid_certificate(username)
             if cert== None:
                 return "No valid certificate", 404
-            return urlsafe_b64decode(cert.encode()).decode()
+            return "-----BEGIN CERTIFICATE-----\n" + urlsafe_b64decode(cert.encode()).decode() + "\n-----END CERTIFICATE-----"
         
         elif request.method == "POST":
             if has_valid_certificate(username) != None:
@@ -131,7 +131,8 @@ def manage_certificate():
             if(res.status_code != 200):
                 return "Error was not added", 500
             crt = "-----BEGIN CERTIFICATE-----" + urlsafe_b64decode(res.text.encode()).decode().split("-----BEGIN CERTIFICATE-----")[1]
-            crt_db = urlsafe_b64encode(crt.encode()).decode()
+            crt_db = crt.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "").strip().replace("\n","")
+            crt_db = urlsafe_b64encode(crt_db.encode()).decode()
             if add_certificate(username, crt_db) != 200:
                 res = session.delete("https://ca_server/certs", cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'), data={'crt': res.text})
                 return "Error was not added", 500
@@ -214,10 +215,19 @@ def check_user_credential(username, password, certificate):
         return None
 
 def find_username_by_cert(cert):
+    cert = cert.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "").replace("\n","").replace("\t","").strip()
+    print(cert)
+    print("--------DB version------------")
+    request_json = {"uid": "admin"}
+    res = session.post("https://mysql/all_certs", data=json.dumps(request_json), cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
+    res = json.loads(res.content.decode())
+    res = urlsafe_b64decode(res["certificates"][0].encode()).decode()
+    print(res)
     json_id = '{"certificate": "'+ urlsafe_b64encode(cert.encode()).decode() +'"}'
     res = session.post("https://mysql/who_has_this_cert", data=json_id, cert=('/etc/Flask/certs/core_cert.pem', '/etc/Flask/private/core_key.pem'))
     if res.status_code == 404 or res.status_code == 400:
         return None
+    print(res.content)
     username = json.loads(res.content)["uid"]
     return username        
 
