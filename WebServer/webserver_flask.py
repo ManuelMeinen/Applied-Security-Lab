@@ -20,11 +20,11 @@ from base64 import urlsafe_b64encode, urlsafe_b64decode
 
 app = Flask(__name__)
 app_proxied = FlaskBehindProxy(app)
-cafile = "/etc/ssl/certs/cacert.pem"
+cafile = "/etc/Flask/certs/cacert.pem"
 session = requests.Session()
 session.verify = cafile
 
-cert_key = ('/etc/ssl/certs/webserver_cert.pem', '/etc/ssl/private/webserver_key.pem')
+cert_key = ('/etc/Flask/certs/webserver_cert.pem','/etc/Flask/private/webserver_key.pem')
 MAX_AGE = 60*10
 
 # The cookie name must match the name created by the core server!
@@ -207,10 +207,10 @@ def is_loggedin():
 
 if __name__ == "__main__":
     context = ssl.SSLContext(ssl.PROTOCOL_TLS)
-    context.load_cert_chain('/etc/ssl/certs/webserver_cert.pem',
-                            '/etc/ssl/private/webserver_key.pem')
+    context.load_cert_chain('/etc/Flask/certs/webserver_cert.pem',
+                            '/etc/Flask/private/webserver_key.pem')
     context.verify_mode = ssl.CERT_OPTIONAL
-    context.load_verify_locations('/etc/ssl/certs/cacert.pem')
+    context.load_verify_locations('/etc/Flask/certs/cacert.pem')
     app.secret_key = os.urandom(12)
     app.run(
         debug=False,

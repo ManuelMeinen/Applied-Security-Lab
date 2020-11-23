@@ -28,15 +28,18 @@ echo "Install depedencies"
 sh /media/asl/WebServer/installation.sh
 
 # Copy the certs and keys
-cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
-chown root /etc/ssl/certs/webserver_cert.pem
-chmod 744 /etc/ssl/certs/webserver_cert.pem
-cp /media/asl/WebServer/webserver_key.pem /etc/ssl/private/webserver_key.pem
-chown root /etc/ssl/private/webserver_key.pem
-chmod 744 /etc/ssl/private/webserver_key.pem
-cp /media/asl/CA/cacert.pem /etc/ssl/certs/cacert.pem
-chown root /etc/ssl/certs/core_cert.pem
-chmod 744 /etc/ssl/certs/core_cert.pem
+mkdir /etc/Flask
+mkdir /etc/Flask/private
+mkdir /etc/Flask/certs
+cp /media/asl/WebServer/webserver_cert.pem /etc/Flask/certs/webserver_cert.pem
+chown root /etc/Flask/certs/webserver_cert.pem
+chmod 744 /etc/Flask/certs/webserver_cert.pem
+cp /media/asl/WebServer/webserver_key.pem /etc/Flask/private/webserver_key.pem
+chown root /etc/Flask/private/webserver_key.pem
+chmod 744 /etc/Flask/private/webserver_key.pem
+cp /media/asl/CA/cacert.pem /etc/Flask/certs/cacert.pem
+chown root /etc/Flask/certs/cacert.pem
+chmod 744 /etc/Flask/certs/cacert.pem
 
 #Nginx configuration
 unlink /etc/nginx/sites-enabled/default
@@ -52,7 +55,7 @@ service nginx restart
 mkdir -p /var/www/webserver/
 cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
 chown root /var/www/webserver/webserver_flask.py
-chmod 711 /var/www/webserver/webserver_flask.py
+chmod 744 /var/www/webserver/webserver_flask.py
 
 mkdir -p /var/www/webserver/templates
 cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
