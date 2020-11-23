@@ -61,3 +61,5 @@ systemctl enable startup
 
 # TODO:
 # - configure files access right
+# - nginx need to be manually started with: sudo service nginx restart (why?)
+# - sanitize username and password ?
