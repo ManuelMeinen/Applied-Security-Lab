@@ -95,6 +95,7 @@ class SFTP:
         remote_dir: Path to where "folder_name" is located
         local_dir: Path to the directory where "folder_name" should be backed up
         ''' 
+        self.make_dir_executable(remote_dir=remote_dir)
         with pysftp.Connection(host=self.host_ip, username=self.username, private_key =self.key_file) as sftp:
             # Copy full folder hirarchy at remote_dir to local_dir
             with sftp.cd("/"+remote_dir[0:-1]) as cd:
@@ -113,6 +114,7 @@ class SFTP:
         remote_dir: Path to where "file_name" is located
         local_dir: Path to the directory where "file_name" should be backed up
         '''
+        self.make_dir_executable(remote_dir=remote_dir)
         with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
             # Assemble the path where the file should be stored
             localFilePath = local_dir+"/"+file_name
@@ -126,6 +128,22 @@ class SFTP:
                     print(out)
             sftp.get(remotepath=remoteFilePath, localpath=localFilePath)
 
+    def make_dir_executable(self, remote_dir):
+        '''
+        Make a directory executable for the backup_user such that he can navigate there and back files up.
+        remote_dir: Path to the folder which should be executable for backup_user
+        '''
+        with pysftp.Connection(host=self.host_ip, username=self.username, private_key=self.key_file) as sftp:
+            folders = remote_dir.split('/')
+            path = ""
+            for folder in folders:
+                path = path+"/"+folder
+                cmd = "sudo setfacl -m u:backup_user:r-X "+path
+                out = sftp.execute(cmd)
+                if len(out)>0:
+                    print("ERROR: setfacl failed!")
+                    print(cmd)
+                    print(out)
 
     def putFile(self, file_name, remote_dir, local_dir):
         '''
