@@ -165,7 +165,7 @@ def ca_admin():
     response = session.get("https://core/admin", cert=cert_key, cookies={'userID': request.cookies.get(userid)})
     if response.status_code == 200:
         data = json.loads(response.content)
-        return render_template('ca_admin.html', serial=data['serial'], nbre_issued=data['nbre_issued'], nbre_revoked=data['nbre_revoked'])
+        return render_template('ca_admin.html', serial=data['serial'], nbre_issued=data['nbreissued'], nbre_revoked=data['nbrerevoked'])
     else:
         return render_template('home.html', msg='You are not an admin.')
 

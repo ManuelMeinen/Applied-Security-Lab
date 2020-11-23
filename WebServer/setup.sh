@@ -27,19 +27,21 @@ chmod 755 /home/backup_user/.ssh/authorized_keys
 echo "Install depedencies"
 sh /media/asl/WebServer/installation.sh
 
-#Nginx configuration
-unlink /etc/nginx/sites-enabled/default
-cp /media/asl/WebServer/reverse-proxy.conf /etc/nginx/sites-available/reverse-proxy.conf
-ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
-service nginx configtest
-service nginx restart
-
-#Copy webpages, scripts and configuration files
+# Copy the certs and keys
 cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
 cp /media/asl/WebServer/webserver_key.pem /etc/ssl/private/webserver_key.pem
 cp /media/asl/Core/core_cert.pem /etc/ssl/certs/core_cert.pem
 cp /media/asl/CA/cacert.pem /etc/ssl/certs/cacert.pem
 
+#Nginx configuration
+unlink /etc/nginx/sites-enabled/default
+cp /media/asl/WebServer/reverse-proxy.conf /etc/nginx/sites-available/reverse-proxy.conf
+ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+service nginx configtest
+systemctl enable nginx
+service nginx restart
+
+#Copy webpages, scripts and configuration files
 mkdir -p /var/www/webserver/
 cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
 
