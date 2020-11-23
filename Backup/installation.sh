@@ -44,6 +44,9 @@ chmod 600 /home/ubuntu/BackupServer/Backup_file_list_MySQLDatabase.txt
 chmod 600 /home/ubuntu/BackupServer/Backup_file_list_VPN.txt
 chmod 600 /home/ubuntu/BackupServer/Backup_file_list_WebServer.txt
 
+# Change password ubuntu 6-jR=)aDGavj-exU39
+echo -e "6-jR=)aDGavj-exU39\n6-jR=)aDGavj-exU39" | passwd ubuntu
+
 
 # Run backup every hour (as root --> run sudo crontab -l to list the job)
 echo "0 * * * * /home/ubuntu/BackupServer/server >> /home/ubuntu/BackupServer/backup_log.txt" | crontab -

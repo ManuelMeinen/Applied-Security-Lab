@@ -75,6 +75,9 @@ chmod 755 /home/backup_user/.ssh/authorized_keys
 cp /media/asl/MySQLDatabase/test_server.py /home/ubuntu
 cp /media/asl/MySQLDatabase/imovies.sql /backup_dir
 
+# Change password ubuntu l6C)XRhH!P9iuFvTVa
+echo -e "l6C)XRhH!P9iuFvTVa\nl6C)XRhH!P9iuFvTVa" | passwd ubuntu
+
 echo "Setup startup"
 cp /media/asl/MySQLDatabase/startup.service /etc/systemd/system
 mkdir /etc/startup

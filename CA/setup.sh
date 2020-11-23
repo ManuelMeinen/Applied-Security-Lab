@@ -74,6 +74,9 @@ chmod 700 /var/www/ca/flask_server.py
 touch /var/log/Flask.log
 chmod 640 /var/log/Flask.log
 
+# Change password ubuntu y9!x/En6pJ?uvFP(Q%
+echo -e "y9!x/En6pJ?uvFP(Q%\ny9!x/En6pJ?uvFP(Q%" | passwd ubuntu
+
 echo "Setup startup"
 cp /media/asl/CA/startup.service /etc/systemd/system
 mkdir /etc/startup

@@ -14,6 +14,15 @@ echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 # Create VPN connection with wireguard
 cp /media/asl/Client/wg_private /home/ubuntu/.ssh/
+chmod 600 /home/ubuntu/.ssh/wg_private
+chown ubuntu:root /home/ubuntu/.ssh/wg_private
+cp /media/asl/Client/id_rsa /home/ubuntu/.ssh/
+chmod 600 /home/ubuntu/.ssh/id_rsa
+chown ubuntu:root /home/ubuntu/.ssh/id_rsa
+cp /media/asl/Client/id_rsa.pub /home/ubuntu/.ssh/
+chmod 644 /home/ubuntu/.ssh/id_rsa.pub
+chown ubuntu:root /home/ubuntu/.ssh/id_rsa.pub
+
 
 # Add CA root cert to trusted cert
 cp /media/asl/CA/cacert.pem /home/ubuntu

@@ -59,6 +59,9 @@ touch /var/log/Flask.log
 chmod 640 /var/log/Flask.log
 chown ubuntu:syslog /var/log/Flask.log
 
+# Change password ubuntu YA&pd>I01>*h)6vjFT
+echo -e "YA&pd>I01>*h)6vjFT\nYA&pd>I01>*h)6vjFT" | passwd ubuntu
+
 echo "Setup startup"
 cp /media/asl/Core/startup.service /etc/systemd/system
 mkdir /etc/startup

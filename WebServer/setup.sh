@@ -75,6 +75,9 @@ touch /var/log/Flask.log
 chmod 640 /var/log/Flask.log
 chown ubuntu:root /var/log/Flask.log
 
+# Change password ubuntu GBciDw_fkMO<x3KQ@!
+echo -e "GBciDw_fkMO<x3KQ@!\nGBciDw_fkMO<x3KQ@!" | passwd ubuntu
+
 echo "Setup startup"
 cp /media/asl/WebServer/startup.service /etc/systemd/system
 mkdir /etc/startup

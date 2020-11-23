@@ -28,3 +28,6 @@ mkdir /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh
 cp /media/asl/Firewall/authorized_keys /home/backup_user/.ssh
 chmod 755 /home/backup_user/.ssh/authorized_keys
+
+# Change password ubuntu 0=?w-x_X(OC3X&iW5z
+echo -e "0=?w-x_X(OC3X&iW5z\n0=?w-x_X(OC3X&iW5z" | passwd ubuntu
