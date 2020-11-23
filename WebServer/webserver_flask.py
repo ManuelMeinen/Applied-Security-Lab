@@ -76,7 +76,7 @@ def login():
 @limiter.exempt
 def logout():
     res = make_response(render_template('login.html'))
-    res.set_cookie(userid, '', max_age=0)
+    res.set_cookie(userid, 'loggedin: False', max_age=0)
     return res
 
 

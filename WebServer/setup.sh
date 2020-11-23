@@ -29,13 +29,20 @@ sh /media/asl/WebServer/installation.sh
 
 # Copy the certs and keys
 cp /media/asl/WebServer/webserver_cert.pem /etc/ssl/certs/webserver_cert.pem
+chown root /etc/ssl/certs/webserver_cert.pem
+chmod 744 /etc/ssl/certs/webserver_cert.pem
 cp /media/asl/WebServer/webserver_key.pem /etc/ssl/private/webserver_key.pem
-cp /media/asl/Core/core_cert.pem /etc/ssl/certs/core_cert.pem
+chown root /etc/ssl/private/webserver_key.pem
+chmod 744 /etc/ssl/private/webserver_key.pem
 cp /media/asl/CA/cacert.pem /etc/ssl/certs/cacert.pem
+chown root /etc/ssl/certs/core_cert.pem
+chmod 744 /etc/ssl/certs/core_cert.pem
 
 #Nginx configuration
 unlink /etc/nginx/sites-enabled/default
 cp /media/asl/WebServer/reverse-proxy.conf /etc/nginx/sites-available/reverse-proxy.conf
+chown root /etc/nginx/sites-available/reverse-proxy.conf
+chmod 744 /etc/nginx/sites-available/reverse-proxy.conf
 ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
 service nginx configtest
 systemctl enable nginx
@@ -44,12 +51,22 @@ service nginx restart
 #Copy webpages, scripts and configuration files
 mkdir -p /var/www/webserver/
 cp /media/asl/WebServer/webserver_flask.py /var/www/webserver/webserver_flask.py
+chown root /var/www/webserver/webserver_flask.py
+chmod 711 /var/www/webserver/webserver_flask.py
 
 mkdir -p /var/www/webserver/templates
 cp /media/asl/WebServer/templates/login.html /var/www/webserver/templates/login.html
+chown root /var/www/webserver/templates/login.html
+chmod 744 /var/www/webserver/templates/login.html
 cp /media/asl/WebServer/templates/home.html /var/www/webserver/templates/home.html
+chown root /var/www/webserver/templates/home.html
+chmod 744 /var/www/webserver/templates/home.html
 cp /media/asl/WebServer/templates/account.html /var/www/webserver/templates/account.html
+chown root /var/www/webserver/templates/account.html
+chmod 744 /var/www/webserver/templates/account.html
 cp /media/asl/WebServer/templates/ca_admin.html /var/www/webserver/templates/ca_admin.html
+chown root /var/www/webserver/templates/ca_admin.html
+chmod 744 /var/www/webserver/templates/ca_admin.html
 
 echo "Setup startup"
 cp /media/asl/WebServer/startup.service /etc/systemd/system
@@ -63,5 +80,3 @@ systemctl enable startup
 
 # TODO:
 # - configure files access right
-# - nginx need to be manually started with: sudo service nginx restart (why?)
-# - sanitize username and password ?
