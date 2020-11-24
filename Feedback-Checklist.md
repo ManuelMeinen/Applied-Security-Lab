@@ -8,7 +8,7 @@ General:
 incomplete and many details remain to be worked out
 - please justify your design choices, e.g., by referring to security principles
 - you need to improve the report's organization:
-  - [ ] Sect 1.2 should describe the system's functionality from a user's
+  - [x] Sect 1.2 should describe the system's functionality from a user's
     perspective (similar to assignment)
   - most of your Sect 1.2 would better fit into Sect 1.4 (components), 
     as it describes internal interfaces of the components
@@ -23,24 +23,24 @@ incomplete and many details remain to be worked out
 System Characterization/Overview (see also General comments above!):
 - [x] system overview is missing! (high-level description, including 
   explanation of Fig 1)
-- [ ] how does web server communicate with core server (TLS?)
-- [ ] unclear why different authentication leads to different revocation behavior
+- [x] how does web server communicate with core server (TLS?)
+- [x] unclear why different authentication leads to different revocation behavior
 - [x] unclear whether backup server connects to DB server (1.2.5) via SFTP or 
   vice versa (1.2.6)
 - [x] Sect 1.2.6: are certificates also backed up?
 - [x] Sect 1.2.7: description of external FW missing
-- [ ] Can a certificate only be downloaded once? (upon generation)
+- [x] Can a certificate only be downloaded once? (upon generation)
 
 Security Design (see also General comments above!)
-- [ ] quite incomplete
-- [ ] several of your services (CA, VPN) need root privilege to access 
+- [x] quite incomplete
+- [x] several of your services (CA, VPN) need root privilege to access 
   private keys or other data. Do some of these services have to run as 
   root? Could this lead to new risks? 
-- [ ] 1.3.5: unclear what "only admin can change data from the servers" means
+- [x] 1.3.5: unclear what "only admin can change data from the servers" means
 - [x] backup: unclear whether encrypted or authenticated 
-- [ ] missing: session management (cookies? other?)
-- [ ] missing: security of data at rest (added for Backups but still missing for DB Server)
-- [ ] missing: any protection against common web app vulnerabilities?
+- [x] missing: session management (cookies? other?)
+- [x] missing: security of data at rest (added for Backups but still missing for DB Server)
+- [x] missing: any protection against common web app vulnerabilities?
   (CSRF, XSS, SQL injection, etc.)
 
 Components:
