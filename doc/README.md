@@ -16,16 +16,18 @@ Our project has 3 different networks:
 
 ## VMs
 
-| Name       | IPs                                          | Credential                |
-| ---------- | -------------------------------------------- | ------------------------- |
-| Client     | 192.168.1.10                                 | ubuntu:ubuntu             |
-| Web Server | 192.168.1.20                                 | ubuntu:GBciDw_fkMO<x3KQ@! |
-| VPN        | 192.168.1.30                                 | ubuntu:IloveASL           |
-| Firewall   | 192.168.40,<br />10.0.10.40,<br />10.0.20.40 | ubuntu:0=?w-x_X(OC3X&iW5z |
-| Core       | 10.0.10.10,<br />10.0.20.10                  | ubuntu:YA&pd>I01>*h)6vjFT |
-| CA         | 10.0.20.20                                   | ubuntu:y9!x/En6pJ?uvFP(Q% |
-| MySQL      | 10.0.20.30                                   | ubuntu:l6C)XRhH!P9iuFvTVa |
-| Backup     | 10.0.20.50                                   | ubuntu:6-jR=)aDGavj-exU39 |
+| Name       | IPs                                          | Credential                                                   |
+| ---------- | -------------------------------------------- | ------------------------------------------------------------ |
+| Client     | 192.168.1.10                                 | ubuntu:ubuntu                                                |
+| Web Server | 192.168.1.20                                 | ubuntu:GBciDw_fkMO<x3KQ@!<br />backup_user:C?NMuPu77c4sHfa3  |
+| VPN        | 192.168.1.30                                 | ubuntu:IloveASL<br />backup_user: ?c_bEpuN-ssCJ4Y3           |
+| Firewall   | 192.168.40,<br />10.0.10.40,<br />10.0.20.40 | ubuntu:0=?w-x_X(OC3X&iW5z<br />backup_user:rS^9cN?E?jxTj@4K  |
+| Core       | 10.0.10.10,<br />10.0.20.10                  | ubuntu:YA&pd>I01>*h)6vjFT<br />backup_user:7zM2YCHky=SQ?e3n  |
+| CA         | 10.0.20.20                                   | ubuntu:y9!x/En6pJ?uvFP(Q%<br />backup_user:WR=JdhtW4R_qV4b9  |
+| MySQL      | 10.0.20.30                                   | ubuntu:l6C)XRhH!P9iuFvTVa<br />backup_user:4-c/hT?CsHTg$b&<Xt |
+| Backup     | 10.0.20.50                                   | ubuntu:6-jR=)aDGavj-exU39                                    |
+
+The backup_user is used by `Backup` to backup periodically the components and ubuntu is used for administration.
 
 ## REST
 

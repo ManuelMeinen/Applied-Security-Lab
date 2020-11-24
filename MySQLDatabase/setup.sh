@@ -55,7 +55,7 @@ echo "MYSQL INSTALLED"
 
 # Adding a backup_user
 username="backup_user"
-password="ubuntu" #TODO: change the password
+password="4-c/hT?CsHTg$b&<Xt" #TODO: change the password
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 useradd -m -p "$pass" "$username"
 adduser "$username" sudo
