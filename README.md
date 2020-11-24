@@ -19,6 +19,6 @@ On all VM, the username/password is by default `ubuntu` `ubuntu`. For security r
 |  backup_user  | CA            |WR=JdhtW4R_qV4b9   |
 |  backup_user  | Core          |7zM2YCHky=SQ?e3n   |
 |  backup_user  | Firewall      |rS^9cN?E?jxTj@4K   |
-|  backup_user  | MySQLDatabase |@%33z#P7nKqhRa7x  |
+|  backup_user  | MySQLDatabase |4-c/hT?CsHTg$b&<Xt  |
 |  backup_user  | VPN           |?c_bEpuN-ssCJ4Y3   |
 |  backup_user  | WebServer     |C?NMuPu77c4sHfa3   |
